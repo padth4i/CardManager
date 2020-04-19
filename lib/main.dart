@@ -209,7 +209,7 @@ class _CardSharingState extends State<CardSharing> {
                                         curve: Curves.easeOut),
                                     Image.asset(
                                         'assets/card_sharing/${cardImages[index % 8]}.png',
-                                        height: 202),
+                                        height: 202 * heightFactor),
                                     Container(
                                       padding: EdgeInsets.only(left: 13),
                                       child: Column(
@@ -327,7 +327,7 @@ class _CardSharingState extends State<CardSharing> {
                                   children: <Widget>[
                                     Image.asset(
                                         'assets/card_sharing/${cardImages[index % 8]}.png',
-                                        height: 202),
+                                        height: 202 * heightFactor),
                                     Container(
                                       padding: EdgeInsets.only(left: 13),
                                       child: Column(

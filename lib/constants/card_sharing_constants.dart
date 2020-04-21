@@ -19,7 +19,7 @@ class CardSharingConstants {
       fontFamily: 'PingFang-SC',
     );
     this.kHeadingStyle = TextStyle(
-      fontSize: 16.0 / textScaleFactor,
+      fontSize: 20.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
       fontWeight: FontWeight.w600,
       color: Color(0xFFffffff),
@@ -49,7 +49,7 @@ class CardSharingConstants {
       color: Color(0xffffffff),
     );
     this.kCardNumberStyle = TextStyle(
-      fontSize: 12.0 / textScaleFactor,
+      fontSize: 14.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
       fontWeight: FontWeight.w600,
       color: Color(0x61ffffff),
@@ -57,7 +57,7 @@ class CardSharingConstants {
     this.kBankNameStyle = TextStyle(
       fontSize: 12.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: Color(0xffffffff),
     );
     this.kCardTypeStyle = TextStyle(

@@ -61,9 +61,9 @@ class CardSharingConstants {
       color: Color(0xffffffff),
     );
     this.kCardTypeStyle = TextStyle(
-      fontSize: 10.0 / textScaleFactor,
+      fontSize: 12.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: Color(0xffffffff),
     );
     this.kPayByStyle = TextStyle(

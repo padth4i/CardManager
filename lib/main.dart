@@ -1,9 +1,15 @@
+import 'dart:math';
+
+import 'package:card_manager/credit_card.dart';
+import 'package:card_manager/data/debit_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:card_manager/constants/card_sharing_constants.dart';
 import 'package:card_manager/data/mock_data/mock_accounts.dart';
 import 'package:card_manager/data/mock_data/mock_statements.dart';
+import 'package:provider/provider.dart';
+import 'package:simple_animations/simple_animations.dart';
 import 'package:zoomable_tilt_view/zoomable_tilt_view.dart';
 
 void main() => runApp(MyApp());
@@ -39,11 +45,27 @@ class _CardSharingState extends State<CardSharing> {
     // 'light_blue',
     // 'yellow'
   ];
+  final MultiTrackTween multiTrackTween = MultiTrackTween([
+    Track('rotate').add(Duration(milliseconds: 300), Tween(begin: 0.0, end: -0.5)),
+    Track('scale').add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.5)),
+    Track('opacity').add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0)),
+    Track('padding_right').add(Duration(milliseconds: 300), Tween(begin: 0.0, end: 20)),
+  ]);
+
+  final MultiTrackTween animacaoCard = MultiTrackTween([
+    Track('rotate').add(Duration(milliseconds: 300), Tween(begin: 0.0, end: -1.07)),
+    Track('top')
+        .add(Duration(milliseconds: 300), Tween(begin: 0.20, end: 0.05), curve: Curves.easeInCubic),
+    Track('scale')
+        .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 1.32), curve: Curves.easeInCubic),
+    Track('new_scale')
+        .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0), curve: Curves.easeInCubic),
+  ]);
+
   static final mockAccounts = MockAccounts();
   final mockStatements = MockStatements();
   List<bool> isSelected = List(mockAccounts.list.length);
   _CardSharingState() {
-    print('big test');
     isSelected.fillRange(0, mockAccounts.list.length, false);
     print(isSelected);
   }
@@ -51,11 +73,12 @@ class _CardSharingState extends State<CardSharing> {
   Widget _formattedDate(DateTime date, TextStyle style) {
     return RichText(
         text: TextSpan(children: <TextSpan>[
-      TextSpan(
-          text: 'Pay by ', style: style.copyWith(color: Color(0x80ffffff))),
+      TextSpan(text: 'Pay by ', style: style.copyWith(color: Color(0x80ffffff))),
       TextSpan(text: Jiffy(date).format('do MMM').toString(), style: style)
     ]));
   }
+
+  bool enlarge = false;
 
   @override
   Widget build(BuildContext context) {
@@ -83,401 +106,87 @@ class _CardSharingState extends State<CardSharing> {
                 ),
                 SizedBox(height: 21 * heightFactor),
                 SizedBox(
-                  height: 240 * heightFactor,
+                  height: 242 / heightFactor,
                   child: ListView.builder(
                     primary: false,
                     scrollDirection: Axis.horizontal,
+                    physics: isSelected.contains(true)
+                        ? NeverScrollableScrollPhysics()
+                        : ScrollPhysics(),
                     itemCount: mockAccounts.list.length,
                     itemBuilder: (context, index) {
-                      return Padding(
-                          padding: EdgeInsets.only(
-                              left: index == 0 ? 16 * widthFactor : 0,
-                              right: 9.0 * widthFactor),
-                          child: mockAccounts.list[index].account_type ==
-                                  'credit'
-                              ? Stack(
-                                  children: <Widget>[
-                                    AnimatedPositioned(
-                                        left: isSelected[index]
-                                            ? 130 * widthFactor
-                                            : 0,
-                                        curve: Curves.easeOut,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            color: Color(0xff27292d),
-                                          ),
-                                          height: 240 * heightFactor,
-                                          width: 160 * widthFactor,
-                                          padding: EdgeInsets.only(
-                                              left: 36 * widthFactor),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              SizedBox(
-                                                  height: 16 * heightFactor),
-                                              Row(
-                                                children: <Widget>[
-                                                  Column(
-                                                    children: <Widget>[
-                                                      RichText(
-                                                          text: TextSpan(
-                                                              children: <
-                                                                  TextSpan>[
-                                                            TextSpan(
-                                                                text: '67',
-                                                                style: cardSharingConstants
-                                                                    .kSpentAmountStyle),
-                                                            TextSpan(
-                                                                text: ' spends',
-                                                                style: cardSharingConstants
-                                                                    .kSpentAmountStyle
-                                                                    .copyWith(
-                                                                        fontSize:
-                                                                            12 /
-                                                                                queryData.textScaleFactor))
-                                                          ])),
-                                                      Text('on this card',
-                                                          style:
-                                                              cardSharingConstants
-                                                                  .kBodyStyle)
-                                                    ],
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50),
-                                                      color: Color(0x33ffffff),
-                                                    ),
-                                                    width: 24 * widthFactor,
-                                                    height: 24 * widthFactor,
-                                                    child: Icon(Icons.list,
-                                                        color: Colors.white, size: 15),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                  height: 16 * heightFactor),
-                                              Text('Total Due',
-                                                  style: cardSharingConstants
-                                                      .kBodyStyle),
-                                              RichText(
-                                                  text: TextSpan(
-                                                      children: <TextSpan>[
-                                                    TextSpan(
-                                                        text: '₹',
-                                                        style: cardSharingConstants
-                                                            .kRupeeStyle
-                                                            .copyWith(
-                                                                fontSize: 20 /
-                                                                    queryData
-                                                                        .textScaleFactor)),
-                                                    TextSpan(
-                                                        text: mockStatements
-                                                            .list[index]
-                                                            .total_due
-                                                            .toInt()
-                                                            .toString(),
-                                                        style: cardSharingConstants
-                                                            .kAvailableAmountStyle)
-                                                  ])),
-                                              SizedBox(
-                                                  height: 10 * heightFactor),
-                                              Text('Minimum Due',
-                                                  style: cardSharingConstants
-                                                      .kBodyStyle),
-                                              RichText(
-                                                  text: TextSpan(
-                                                      children: <TextSpan>[
-                                                    TextSpan(
-                                                        text: '₹',
-                                                        style: cardSharingConstants
-                                                            .kRupeeStyle
-                                                            .copyWith(
-                                                                fontSize: 16 /
-                                                                    queryData
-                                                                        .textScaleFactor)),
-                                                    TextSpan(
-                                                        text: mockStatements
-                                                            .list[index].min_due
-                                                            .toInt()
-                                                            .toString(),
-                                                        style: cardSharingConstants
-                                                            .kSpentAmountStyle)
-                                                  ])),
-                                              SizedBox(
-                                                  height: 11 * heightFactor),
-                                              _formattedDate(
-                                                  mockStatements
-                                                      .list[index].due_date,
-                                                  cardSharingConstants
-                                                      .kPayByStyle),
-                                              SizedBox(
-                                                  height: 12 * heightFactor),
-                                              Container(
-                                                width: 98 * widthFactor,
-                                                height: 28 * heightFactor,
-                                                decoration: BoxDecoration(
-                                                    color: Color(0xff008afc),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4)),
-                                                child: Center(
-                                                  child: Text(
-                                                    'PAY NOW',
-                                                    style:
-                                                        cardSharingConstants
-                                                            .kBodyStyle
-                                                            .copyWith(
-                                                                color: Colors
-                                                                    .white),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                             isSelected[index] = !isSelected[index];
+                          });
+                        },
+                        child: Padding(
+                            padding: EdgeInsets.only(
+                                left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
+                            child: AnimatedOpacity(
+                              duration: Duration(milliseconds: 10),
+                              opacity:
+                                  isSelected.contains(true) && isSelected[index] == false ? 0 : 1,
+                              child: Stack(children: [
+                                ControlledAnimation(
+                                  tween: animacaoCard,
+                                  duration: animacaoCard.duration,
+                                  playback: isSelected[index]
+                                      ? Playback.PLAY_FORWARD
+                                      : Playback.PLAY_REVERSE,
+                                  builder: (context, animation) {
+                                    return Positioned(
+                                      child: Transform.rotate(
+                                        angle: animation['rotate'],
+                                        child: Transform.scale(
+                                          scale: animation['scale'],
+                                          child: ControlledAnimation(
+                                            tween: multiTrackTween,
+                                            duration: multiTrackTween.duration,
+                                            playback: isSelected[index]
+                                                ? Playback.PLAY_FORWARD
+                                                : Playback.PLAY_REVERSE,
+                                            builder: (context, animation) {
+                                              return Transform.rotate(
+                                                angle: animation['rotate'],
+                                                child: mockAccounts.list[index].account_type ==
+                                                        'credit'
+                                                    ? CreditCard(
+                                                        accountNumber:
+                                                            mockAccounts.list[index].account_number,
+                                                        balance: mockAccounts.list[index].balance,
+                                                        cardColor: cardImages[index % 3],
+                                                        heightFactor: heightFactor,
+                                                        widthFactor: widthFactor,
+                                                        orgName: mockAccounts.list[index].org_name,
+                                                        spentThisMonth: mockAccounts
+                                                            .list[index].spent_this_month,
+                                                        textScaleFactor: queryData.textScaleFactor,
+                                                      )
+                                                    : DebitCard(
+                                                        accountNumber:
+                                                            mockAccounts.list[index].account_number,
+                                                        balance: mockAccounts.list[index].balance,
+                                                        cardColor: cardImages[index % 3],
+                                                        heightFactor: heightFactor,
+                                                        widthFactor: widthFactor,
+                                                        orgName: mockAccounts.list[index].org_name,
+                                                        spentThisMonth: mockAccounts
+                                                            .list[index].spent_this_month,
+                                                        textScaleFactor: queryData.textScaleFactor,
+                                                      ),
+                                              );
+                                            },
                                           ),
                                         ),
-                                        duration: Duration(milliseconds: 500)),
-                                    AnimatedContainer(
-                                        duration: Duration(milliseconds: 500),
-                                        height: 202 * heightFactor,
-                                        width: isSelected[index]
-                                            ? 300 * widthFactor
-                                            : 136 * widthFactor,
-                                        curve: Curves.easeOut),
-                                    Image.asset(
-                                        'assets/card_sharing/new_${cardImages[index % 3]}.png',
-                                        // 'assets/card_sharing/red.png',
-                                        height: 240 * heightFactor),
-                                    Container(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          SizedBox(height: 12 * heightFactor),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 13),
-                                            child: Text(
-                                                mockAccounts
-                                                    .list[index].org_name,
-                                                style: cardSharingConstants
-                                                    .kBankNameStyle),
-                                          ),
-                                          SizedBox(height: 12 * heightFactor),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 13),
-                                            child: Text('Available limit',
-                                                style: cardSharingConstants
-                                                    .kBodyStyle),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 13),
-                                            child: RichText(
-                                                text: TextSpan(
-                                                    children: <TextSpan>[
-                                                  TextSpan(
-                                                      text: '₹',
-                                                      style: cardSharingConstants
-                                                          .kRupeeStyle
-                                                          .copyWith(
-                                                              fontSize: 20 /
-                                                                  queryData
-                                                                      .textScaleFactor)),
-                                                  TextSpan(
-                                                      text: mockAccounts
-                                                          .list[index].balance
-                                                          .toInt()
-                                                          .toString(),
-                                                      style: cardSharingConstants
-                                                          .kAvailableAmountStyle)
-                                                ])),
-                                          ),
-                                          SizedBox(height: 12 * heightFactor),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 13),
-                                            child: Text('Spent this month',
-                                                style: cardSharingConstants
-                                                    .kBodyStyle),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 13),
-                                            child: RichText(
-                                                text: TextSpan(
-                                                    children: <TextSpan>[
-                                                  TextSpan(
-                                                      text: '₹',
-                                                      style: cardSharingConstants
-                                                          .kRupeeStyle
-                                                          .copyWith(
-                                                              fontSize: 16 /
-                                                                  queryData
-                                                                      .textScaleFactor)),
-                                                  TextSpan(
-                                                      text: mockAccounts
-                                                          .list[index]
-                                                          .spent_this_month
-                                                          .toInt()
-                                                          .toString(),
-                                                      style: cardSharingConstants
-                                                          .kSpentAmountStyle)
-                                                ])),
-                                          ),
-                                          SizedBox(height: 12 * heightFactor),
-                                          Container(
-                                            padding: EdgeInsets.only(
-                                                left: 6.5 * widthFactor),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  if (isSelected[index] ==
-                                                      null) {
-                                                    isSelected[index] = false;
-                                                    isSelected[index] =
-                                                        !isSelected[index];
-                                                  } else
-                                                    isSelected[index] =
-                                                        !isSelected[index];
-                                                  print(isSelected);
-                                                });
-                                              },
-                                              child: Container(
-                                                height: 18 * heightFactor,
-                                                width: 136 * widthFactor,
-                                                decoration: BoxDecoration(
-                                                    color: Color(0x4dffffff),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2)),
-                                                child: Center(
-                                                  child: Text(
-                                                      '👆TAP TO SEE YOUR DUE BILL',
-                                                      style:
-                                                          cardSharingConstants
-                                                              .kDueBillButton),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 18 * heightFactor),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 13),
-                                            child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Text('**** **** **** ',
-                                                      style: cardSharingConstants
-                                                          .kCardNumberStyle),
-                                                  Text(
-                                                      '${mockAccounts.list[index].account_number.substring(12, 16)}',
-                                                      style: cardSharingConstants
-                                                          .kCardNumberStyle),
-                                                ]),
-                                          ),
-                                          SizedBox(height: 12.7 * heightFactor),
-                                          Container(
-                                              padding:
-                                                  EdgeInsets.only(left: 105),
-                                              child: Text('CREDIT',
-                                                  style: cardSharingConstants
-                                                      .kCardTypeStyle)),
-                                        ],
                                       ),
-                                    ),
-                                  ],
-                                )
-                              : Stack(
-                                  children: <Widget>[
-                                    Image.asset(
-                                        'assets/card_sharing/new_${cardImages[index % 3]}.png',
-                                        // 'assets/card_sharing/red.png',
-                                        height: 240 * heightFactor),
-                                    Container(
-                                      padding: EdgeInsets.only(left: 13),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          SizedBox(height: 12 * heightFactor),
-                                          Text(
-                                              mockAccounts.list[index].org_name,
-                                              style: cardSharingConstants
-                                                  .kBankNameStyle),
-                                          SizedBox(height: 12 * heightFactor),
-                                          Text('Current balance',
-                                              style: cardSharingConstants
-                                                  .kBodyStyle),
-                                          RichText(
-                                              text:
-                                                  TextSpan(children: <TextSpan>[
-                                            TextSpan(
-                                                text: '₹',
-                                                style: cardSharingConstants
-                                                    .kRupeeStyle
-                                                    .copyWith(
-                                                        fontSize: 20 /
-                                                            queryData
-                                                                .textScaleFactor)),
-                                            TextSpan(
-                                                text: mockAccounts
-                                                    .list[index].balance
-                                                    .toInt()
-                                                    .toString(),
-                                                style: cardSharingConstants
-                                                    .kAvailableAmountStyle)
-                                          ])),
-                                          SizedBox(height: 14 * heightFactor),
-                                          Text('Spent this month',
-                                              style: cardSharingConstants
-                                                  .kBodyStyle),
-                                          RichText(
-                                              text:
-                                                  TextSpan(children: <TextSpan>[
-                                            TextSpan(
-                                                text: '₹',
-                                                style: cardSharingConstants
-                                                    .kRupeeStyle
-                                                    .copyWith(
-                                                        fontSize: 16 /
-                                                            queryData
-                                                                .textScaleFactor)),
-                                            TextSpan(
-                                                text: mockAccounts.list[index]
-                                                    .spent_this_month
-                                                    .toInt()
-                                                    .toString(),
-                                                style: cardSharingConstants
-                                                    .kSpentAmountStyle)
-                                          ])),
-                                          SizedBox(height: 47 * heightFactor),
-                                          Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: <Widget>[
-                                                Text('**** **** **** ',
-                                                    style: cardSharingConstants
-                                                        .kCardNumberStyle),
-                                                Text(
-                                                    '${mockAccounts.list[index].account_number.substring(12, 16)}',
-                                                    style: cardSharingConstants
-                                                        .kCardNumberStyle),
-                                              ]),
-                                          SizedBox(height: 12.7 * heightFactor),
-                                          Container(
-                                              padding:
-                                                  EdgeInsets.only(left: 92),
-                                              child: Text('DEBIT',
-                                                  style: cardSharingConstants
-                                                      .kCardTypeStyle)),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ));
+                                    );
+                                  },
+                                ),
+                              ]),
+                            )),
+                      );
                     },
                   ),
                 ),
@@ -508,3 +217,158 @@ class _CardSharingState extends State<CardSharing> {
     );
   }
 }
+
+// class ItemPage extends StatelessWidget {
+//   final Color color;
+//   final int index;
+//   final String numberCard;
+//   final String name;
+//   final String imageURL;
+//   final String operadoraURL;
+
+// final MultiTrackTween multiTrackTween = MultiTrackTween([
+//   Track('rotate')
+//       .add(Duration(milliseconds: 300), Tween(begin: 0.0, end: -0.5)),
+//   Track('scale')
+//       .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.5)),
+//   Track('opacity')
+//       .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0)),
+//   Track('padding_right')
+//       .add(Duration(milliseconds: 300), Tween(begin: 0.0, end: 20)),
+// ]);
+
+// final MultiTrackTween animacaoCard = MultiTrackTween([
+//   Track('rotate')
+//       .add(Duration(milliseconds: 300), Tween(begin: 0.0, end: 1.57)),
+//   Track('top').add(Duration(milliseconds: 300), Tween(begin: 0.20, end: 0.05),
+//       curve: Curves.easeInCubic),
+//   Track('scale').add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.7),
+//       curve: Curves.easeInCubic),
+//   Track('new_scale').add(
+//       Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0),
+//       curve: Curves.easeInCubic),
+// ]);
+
+//   ItemPage(
+//       {Key key,
+//       this.color,
+//       this.index,
+//       this.numberCard,
+//       this.name,
+//       this.imageURL,
+//       this.operadoraURL})
+//       : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () async {
+//         int currentIndex =
+//             Provider.of<PageControllerApp>(context, listen: false).currentIndex;
+//         if (currentIndex != -1) {
+//           Provider.of<PageControllerApp>(context, listen: false).setisFlipped(
+//               !Provider.of<PageControllerApp>(context, listen: false)
+//                   .isFlipped);
+//         } else {
+//           Provider.of<PageControllerApp>(context, listen: false)
+//               .setCurrentIndex(index);
+//           await Provider.of<PageControllerApp>(context, listen: false)
+//               .showSheet();
+//         }
+//       },
+//       child: Consumer<PageControllerApp>(
+//         child: FlippableBox(
+//           front: FrontCard(
+//             operadoraURL: operadoraURL,
+//             imageURL: imageURL,
+//             color: color,
+//           ),
+//           back: BackCard(color),
+//           isFlipped:
+//               Provider.of<PageControllerApp>(context, listen: false).isFlipped,
+//         ),
+//         builder: (BuildContext context, PageControllerApp value, Widget child) {
+//           int pageIndex =
+//               Provider.of<PageControllerApp>(context, listen: false).index;
+
+//           int currentIndex =
+//               Provider.of<PageControllerApp>(context, listen: false)
+//                   .currentIndex;
+
+//           double progress =
+//               Provider.of<PageControllerApp>(context, listen: false)
+//                   .progress;
+
+//           double spec = Provider.of<PageControllerApp>(context, listen: false)
+//               .spec;
+
+//           bool hideCard;
+//           if (currentIndex != -1) {
+//             if (index == currentIndex) {
+//               hideCard = false;
+//             } else {
+//               hideCard = true;
+//             }
+//           } else {
+//             hideCard = false;
+//           }
+
+//           return AnimatedOpacity(
+// duration: Duration(milliseconds: 10),
+// opacity: hideCard ? 0 : 1,
+//             child: Stack(
+//               alignment: Alignment.center,
+//               children: <Widget>[
+//                 ControlledAnimation(
+//                   tween: animacaoCard,
+//                   duration: animacaoCard.duration,
+//                   playback: currentIndex != -1
+//                       ? Playback.PLAY_FORWARD
+//                       : Playback.PLAY_REVERSE,
+//                   builder: (context, animation) {
+//                     return Positioned(
+//                       top: MediaQuery.of(context).size.height *
+//                                       animation['top'] - progress * MediaQuery.of(context).size.height * 0.42 +
+//                                       MediaQuery.of(context).padding.top,
+//                       height: MediaQuery.of(context).size.height * 0.55,
+//                       width: MediaQuery.of(context).size.width * 0.80,
+//                       child: Transform.rotate(
+//                         angle: animation['rotate'],
+//                         child: Transform.scale(
+//                           scale: animation['scale'],
+//                           child: ControlledAnimation(
+//                             tween: multiTrackTween,
+//                             duration: multiTrackTween.duration,
+//                             playback: pageIndex > index
+//                                 ? Playback.PLAY_FORWARD
+//                                 : Playback.PLAY_REVERSE,
+//                             builder: (context, animation) {
+//                               return Transform.rotate(
+//                                 angle: animation['rotate'],
+//                                 child: Transform.scale(
+//                                     child: Opacity(
+//                                       child: Padding(
+//                                         padding: EdgeInsets.only(
+//                                             right:
+//                                                 0 /*animation['padding_right']*/),
+//                                         child: child,
+//                                       ),
+//                                       opacity: animation['opacity'],
+//                                     ),
+//                                     scale: animation['scale'] - (progress * 0.6)),
+//                               );
+//                             },
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

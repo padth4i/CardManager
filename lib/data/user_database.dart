@@ -33,8 +33,41 @@ class Accounts extends Table {
   @required RealColumn get outstanding_balance => real().nullable()();
 }
 
+class Expenses extends Table {
+  DateTimeColumn get created_at => dateTime()();
+  DateTimeColumn get updated_at => dateTime()();
+  TextColumn get uid => text()();
+  @required TextColumn get sms_uid => text().nullable()();
+  TextColumn get smsMessage => text()();
+  BoolColumn get is_expense => boolean()();
+  BoolColumn get successful => boolean().nullable()();
+  RealColumn get amount_in_sms => real()();
+  RealColumn get expense_amount => real()();
+  RealColumn get account_number => real().nullable()();
+  RealColumn get account_balance => real().nullable()();
+  BoolColumn get is_debit => boolean().nullable()();
+  BoolColumn get is_credit => boolean().nullable()();
+  BoolColumn get is_salary => boolean().nullable()();
+  BoolColumn get is_upi => boolean().nullable()();
+  BoolColumn get is_wallet => boolean().nullable()();
+  BoolColumn get is_card => boolean().nullable()();
+  BoolColumn get is_bank_transfer => boolean().nullable()();
+  BoolColumn get is_refund => boolean().nullable()();
+  TextColumn get merchant_name => text().nullable()();
+  TextColumn get category => text().nullable()();
+  TextColumn get wallet_name => text().nullable()();
+  BoolColumn get is_withdrawal => boolean().nullable()();
+  BoolColumn get is_bill => boolean().nullable()();
+  RealColumn get minimum_due => real().nullable()();
+  RealColumn get total_due => real().nullable()();
+  DateTimeColumn get spend_date => dateTime()();
+  TextColumn get source => text().nullable()();
+  RealColumn get splurge_amount => real().nullable()();
+  RealColumn get parser_version => real().nullable()();
+}
+
 @UseDao(
-  tables: [Statements, Accounts],
+  tables: [Statements, Accounts, Expenses],
   queries: {
     // An implementation of this query will be generated inside the _$TaskDaoMixin
     // Both completeTasksGenerated() and watchCompletedTasksGenerated() will be created.
@@ -53,7 +86,7 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin{
 
 
 
-@UseMoor( tables: [Statements, Accounts  ], daos: [UserDao])
+@UseMoor( tables: [Statements, Accounts, Expenses], daos: [UserDao])
 class AppDatabase extends _$AppDatabase{
 
   AppDatabase()

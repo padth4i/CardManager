@@ -14,6 +14,13 @@ class CardBloc extends Bloc<CardEvent, CardState> {
   Stream<CardState> mapEventToState(
     CardEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is CardTapEvent) {
+      print('inside bloc');
+      yield CardExpanded(event.cardColor, event.orgName, event.accountNumber, event.cardType, event.balance, event.spentThisMonth, event.cardIndex);
+    }
+    if (event is CardReturnEvent) {
+      print('return');
+      yield CardsList();
+    }
   }
 }

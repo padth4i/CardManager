@@ -11,7 +11,10 @@ class CardSharingConstants {
       kBankNameStyle,
       kCardTypeStyle,
       kPayByStyle,
-      kRupeeStyle;
+      kRupeeStyle,
+      kEnlargedBodyStyle,
+      kEnlargedAvailableAmountStyle,
+      kEnlargedSpentAmountStyle;
 
   CardSharingConstants(double textScale) {
     this.textScaleFactor = textScale;
@@ -71,6 +74,24 @@ class CardSharingConstants {
       fontWeight: FontWeight.w500,
       fontSize: 10.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
+    );
+    this.kEnlargedBodyStyle = TextStyle(
+      fontSize: 10.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w400,
+      color: Color(0x80ffffff),
+    );
+    this.kEnlargedAvailableAmountStyle = TextStyle(
+      fontSize: 22.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w600,
+      color: Color(0xffffffff),
+    );
+    this.kEnlargedSpentAmountStyle = TextStyle(
+      fontSize: 18.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w500,
+      color: Color(0xffffffff),
     );
   }
 }

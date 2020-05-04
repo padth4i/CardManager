@@ -14,7 +14,13 @@ class CardSharingConstants {
       kRupeeStyle,
       kEnlargedBodyStyle,
       kEnlargedAvailableAmountStyle,
-      kEnlargedSpentAmountStyle;
+      kEnlargedSpentAmountStyle,
+      kDueTitleStyle,
+      kDueBodyStyle,
+      kTotalDueStyle,
+      kMinimumDueStyle,
+      kDueDateStyle,
+      kWalletNameStyle;
 
   CardSharingConstants(double textScale) {
     this.textScaleFactor = textScale;
@@ -46,7 +52,7 @@ class CardSharingConstants {
       color: Color(0xffffffff),
     );
     this.kDueBillButton = TextStyle(
-      fontSize: 8.0 / textScaleFactor,
+      fontSize: 10.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
       fontWeight: FontWeight.w700,
       color: Color(0xffffffff),
@@ -91,6 +97,42 @@ class CardSharingConstants {
       fontSize: 18.0 / textScaleFactor,
       fontFamily: 'HKGrotesk',
       fontWeight: FontWeight.w500,
+      color: Color(0xffffffff),
+    );
+    this.kDueTitleStyle = TextStyle(
+      fontSize: 10.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w600,
+      color: Color(0xffffffff),
+    );
+    this.kDueBodyStyle = TextStyle(
+      fontSize: 10.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w500,
+      color: Color(0x80ffffff),
+    );
+    this.kTotalDueStyle = TextStyle(
+      fontSize: 18.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w600,
+      color: Color(0xff008afc),
+    );
+    this.kMinimumDueStyle = TextStyle(
+      fontSize: 18.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w500,
+      color: Color(0xffffffff),
+    );
+    this.kDueDateStyle = TextStyle(
+      fontSize: 10.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w600,
+      color: Color(0xffffffff),
+    );
+    this.kWalletNameStyle = TextStyle(
+      fontSize: 14.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w600,
       color: Color(0xffffffff),
     );
   }

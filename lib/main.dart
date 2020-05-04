@@ -42,23 +42,10 @@ class _CardSharingState extends State<CardSharing> {
     // 'light_blue',
     // 'yellow'
   ];
-  // final MultiTrackTween multiTrackTween = MultiTrackTween([
-  //   Track('rotate').add(Duration(milliseconds: 300), Tween(begin: 0.0, end: -0.5)),
-  //   Track('scale').add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.5)),
-  //   Track('opacity').add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0)),
-  //   Track('padding_right').add(Duration(milliseconds: 300), Tween(begin: 0.0, end: 20)),
-  // ]);
-
-  // final MultiTrackTween animacaoCard = MultiTrackTween([
-  //   Track('rotate').add(Duration(milliseconds: 300), Tween(begin: 0.0, end: -1.07)),
-  //   Track('top')
-  //       .add(Duration(milliseconds: 300), Tween(begin: 0.20, end: 0.05), curve: Curves.easeInCubic),
-  //   Track('scale')
-  //       .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 1.32), curve: Curves.easeInCubic),
-  //   Track('new_scale')
-  //       .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0), curve: Curves.easeInCubic),
-  // ]);
-
+  List<String> walletImages = [
+    'red',
+    'blue',
+  ];
   static final mockAccounts = MockAccounts();
   final mockStatements = MockStatements();
   List<bool> isSelected = List(mockAccounts.list.length);
@@ -103,9 +90,8 @@ class _CardSharingState extends State<CardSharing> {
                   ],
                 ),
                 SizedBox(height: 21 * heightFactor),
-
                 SizedBox(
-                  height: 242 / heightFactor,
+                  height: 222 / heightFactor,
                   child: ListView.builder(
                     primary: false,
                     scrollDirection: Axis.horizontal,
@@ -116,11 +102,6 @@ class _CardSharingState extends State<CardSharing> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          // setState(() {
-                          //   isSelected[index] = !isSelected[index];
-                          // });
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => BigCard()));
-
                           Navigator.push(
                               context,
                               PageRouteBuilder(
@@ -176,94 +157,79 @@ class _CardSharingState extends State<CardSharing> {
                                     spentThisMonth: mockAccounts.list[index].spent_this_month,
                                     textScaleFactor: queryData.textScaleFactor,
                                   ),
-                            // child: AnimatedOpacity(
-                            //   duration: Duration(milliseconds: 10),
-                            //   opacity:
-                            //       isSelected.contains(true) && isSelected[index] == false ? 0 : 1,
-                            //   child: Stack(children: [
-                            //     ControlledAnimation(
-                            //       tween: animacaoCard,
-                            //       duration: animacaoCard.duration,
-                            //       playback: isSelected[index]
-                            //           ? Playback.PLAY_FORWARD
-                            //           : Playback.PLAY_REVERSE,
-                            //       builder: (context, animation) {
-                            //         return Positioned(
-                            //           child: Transform.rotate(
-                            //             angle: animation['rotate'],
-                            //             child: Transform.scale(
-                            //               scale: animation['scale'],
-                            //               child: ControlledAnimation(
-                            //                 tween: multiTrackTween,
-                            //                 duration: multiTrackTween.duration,
-                            //                 playback: isSelected[index]
-                            //                     ? Playback.PLAY_FORWARD
-                            //                     : Playback.PLAY_REVERSE,
-                            //                 builder: (context, animation) {
-                            //                   return Transform.rotate(
-                            //                     angle: animation['rotate'],
-                            //                     child: mockAccounts.list[index].account_type ==
-                            //                             'credit'
-                            //                         ? CreditCard(
-                            //                             accountNumber:
-                            //                                 mockAccounts.list[index].account_number,
-                            //                             balance: mockAccounts.list[index].balance,
-                            //                             cardColor: cardImages[index % 3],
-                            //                             heightFactor: heightFactor,
-                            //                             widthFactor: widthFactor,
-                            //                             orgName: mockAccounts.list[index].org_name,
-                            //                             spentThisMonth: mockAccounts
-                            //                                 .list[index].spent_this_month,
-                            //                             textScaleFactor: queryData.textScaleFactor,
-                            //                           )
-                            //                         : DebitCard(
-                            //                             accountNumber:
-                            //                                 mockAccounts.list[index].account_number,
-                            //                             balance: mockAccounts.list[index].balance,
-                            //                             cardColor: cardImages[index % 3],
-                            //                             heightFactor: heightFactor,
-                            //                             widthFactor: widthFactor,
-                            //                             orgName: mockAccounts.list[index].org_name,
-                            //                             spentThisMonth: mockAccounts
-                            //                                 .list[index].spent_this_month,
-                            //                             textScaleFactor: queryData.textScaleFactor,
-                            //                           ),
-                            //                   );
-                            //                 },
-                            //               ),
-                            //             ),
-                            //           ),
-                            //         );
-                            //       },
-                            //     ),
-                            //   ]),
-                            // ),
                           ),
                         ),
                       );
                     },
                   ),
+                ),
+                SizedBox(height: 34 * heightFactor),
+                Row(
+                  children: <Widget>[
+                    SizedBox(width: 16 * widthFactor),
+                    SvgPicture.asset('assets/card_sharing/icon.svg'),
+                    SizedBox(width: 6 * widthFactor),
+                    Text('My Wallets', style: cardSharingConstants.kHeadingStyle),
+                  ],
+                ),
+                SizedBox(height: 21 * heightFactor),
+                SizedBox(
+                  height: 150 / heightFactor,
+                  child: ListView.builder(
+                    primary: false,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 2,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                          padding: EdgeInsets.only(
+                              left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
+                          child: Row(
+                            children: <Widget>[
+                              Stack(
+                                children: <Widget>[
+                                  Image.asset(
+                                    'assets/card_sharing/wallet_${walletImages[index % 2]}.png',
+                                    width: 160 * widthFactor,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(
+                                        left: 15 * widthFactor, top: 14 * heightFactor),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          'Flipkart Paylater',
+                                          style: cardSharingConstants.kWalletNameStyle,
+                                        ),
+                                        SizedBox(height: 4 * heightFactor),
+                                        RichText(
+                                          text: TextSpan(
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                  text: 'Pay by ',
+                                                  style: cardSharingConstants.kDueBodyStyle),
+                                              TextSpan(
+                                                  text: '14th April',
+                                                  style: cardSharingConstants.kDueDateStyle)
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 14 * heightFactor),
+                                        Text(
+                                          '₹69,952',
+                                          style: cardSharingConstants.kAvailableAmountStyle,
+                                        ),
+                                        Text('this month', style: cardSharingConstants.kBodyStyle),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              )
+                            ],
+                          ));
+                    },
+                  ),
                 )
-
-                // SizedBox(height: 40,),
-                // Row(
-                //   children: <Widget>[
-                //     SizedBox(
-                //       width: 16 * widthFactor,
-                //     ),
-                //     ZoomableTiltView(
-                //       yTiltLimit: 20,
-                //       xTiltLimit: 20,
-                //       tiltSensitivity: 1.5,
-                //       zoomLimit: 1,
-                //       child: Container(
-                //         height: 202 * heightFactor,
-                //         width: 144 * widthFactor,
-                //         child: Image.asset('assets/card_sharing/red.png'),
-                //       ),
-                //     ),
-                //   ],
-                // )
               ],
             ),
           );
@@ -272,158 +238,3 @@ class _CardSharingState extends State<CardSharing> {
     );
   }
 }
-
-// class ItemPage extends StatelessWidget {
-//   final Color color;
-//   final int index;
-//   final String numberCard;
-//   final String name;
-//   final String imageURL;
-//   final String operadoraURL;
-
-// final MultiTrackTween multiTrackTween = MultiTrackTween([
-//   Track('rotate')
-//       .add(Duration(milliseconds: 300), Tween(begin: 0.0, end: -0.5)),
-//   Track('scale')
-//       .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.5)),
-//   Track('opacity')
-//       .add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0)),
-//   Track('padding_right')
-//       .add(Duration(milliseconds: 300), Tween(begin: 0.0, end: 20)),
-// ]);
-
-// final MultiTrackTween animacaoCard = MultiTrackTween([
-//   Track('rotate')
-//       .add(Duration(milliseconds: 300), Tween(begin: 0.0, end: 1.57)),
-//   Track('top').add(Duration(milliseconds: 300), Tween(begin: 0.20, end: 0.05),
-//       curve: Curves.easeInCubic),
-//   Track('scale').add(Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.7),
-//       curve: Curves.easeInCubic),
-//   Track('new_scale').add(
-//       Duration(milliseconds: 300), Tween(begin: 1.0, end: 0.0),
-//       curve: Curves.easeInCubic),
-// ]);
-
-//   ItemPage(
-//       {Key key,
-//       this.color,
-//       this.index,
-//       this.numberCard,
-//       this.name,
-//       this.imageURL,
-//       this.operadoraURL})
-//       : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () async {
-//         int currentIndex =
-//             Provider.of<PageControllerApp>(context, listen: false).currentIndex;
-//         if (currentIndex != -1) {
-//           Provider.of<PageControllerApp>(context, listen: false).setisFlipped(
-//               !Provider.of<PageControllerApp>(context, listen: false)
-//                   .isFlipped);
-//         } else {
-//           Provider.of<PageControllerApp>(context, listen: false)
-//               .setCurrentIndex(index);
-//           await Provider.of<PageControllerApp>(context, listen: false)
-//               .showSheet();
-//         }
-//       },
-//       child: Consumer<PageControllerApp>(
-//         child: FlippableBox(
-//           front: FrontCard(
-//             operadoraURL: operadoraURL,
-//             imageURL: imageURL,
-//             color: color,
-//           ),
-//           back: BackCard(color),
-//           isFlipped:
-//               Provider.of<PageControllerApp>(context, listen: false).isFlipped,
-//         ),
-//         builder: (BuildContext context, PageControllerApp value, Widget child) {
-//           int pageIndex =
-//               Provider.of<PageControllerApp>(context, listen: false).index;
-
-//           int currentIndex =
-//               Provider.of<PageControllerApp>(context, listen: false)
-//                   .currentIndex;
-
-//           double progress =
-//               Provider.of<PageControllerApp>(context, listen: false)
-//                   .progress;
-
-//           double spec = Provider.of<PageControllerApp>(context, listen: false)
-//               .spec;
-
-//           bool hideCard;
-//           if (currentIndex != -1) {
-//             if (index == currentIndex) {
-//               hideCard = false;
-//             } else {
-//               hideCard = true;
-//             }
-//           } else {
-//             hideCard = false;
-//           }
-
-//           return AnimatedOpacity(
-// duration: Duration(milliseconds: 10),
-// opacity: hideCard ? 0 : 1,
-//             child: Stack(
-//               alignment: Alignment.center,
-//               children: <Widget>[
-//                 ControlledAnimation(
-//                   tween: animacaoCard,
-//                   duration: animacaoCard.duration,
-//                   playback: currentIndex != -1
-//                       ? Playback.PLAY_FORWARD
-//                       : Playback.PLAY_REVERSE,
-//                   builder: (context, animation) {
-//                     return Positioned(
-//                       top: MediaQuery.of(context).size.height *
-//                                       animation['top'] - progress * MediaQuery.of(context).size.height * 0.42 +
-//                                       MediaQuery.of(context).padding.top,
-//                       height: MediaQuery.of(context).size.height * 0.55,
-//                       width: MediaQuery.of(context).size.width * 0.80,
-//                       child: Transform.rotate(
-//                         angle: animation['rotate'],
-//                         child: Transform.scale(
-//                           scale: animation['scale'],
-//                           child: ControlledAnimation(
-//                             tween: multiTrackTween,
-//                             duration: multiTrackTween.duration,
-//                             playback: pageIndex > index
-//                                 ? Playback.PLAY_FORWARD
-//                                 : Playback.PLAY_REVERSE,
-//                             builder: (context, animation) {
-//                               return Transform.rotate(
-//                                 angle: animation['rotate'],
-//                                 child: Transform.scale(
-//                                     child: Opacity(
-//                                       child: Padding(
-//                                         padding: EdgeInsets.only(
-//                                             right:
-//                                                 0 /*animation['padding_right']*/),
-//                                         child: child,
-//                                       ),
-//                                       opacity: animation['opacity'],
-//                                     ),
-//                                     scale: animation['scale'] - (progress * 0.6)),
-//                               );
-//                             },
-//                           ),
-//                         ),
-//                       ),
-//                     );
-//                   },
-//                 ),
-//               ],
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

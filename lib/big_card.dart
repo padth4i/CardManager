@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:card_manager/constants/mvp_constants.dart';
 import 'package:card_manager/data/spends_object.dart';
-import 'package:card_manager/spends_list.dart';
+import 'package:card_manager/spends_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:card_manager/constants/card_sharing_constants.dart';
 import 'package:card_manager/data/mock_data/mock_accounts.dart';
@@ -50,10 +51,27 @@ class _BigCardState extends State<BigCard> {
     ]));
   }
 
-  bool enlarge = false;
+  bool enlarge;
   MvpConstants mvpConstants;
-  bool slideUp = false;
-  bool dueCardTransparent = false;
+  bool slideUp;
+  bool dueCardTransparent;
+  bool enlargedTextTransparent;
+  SolidController solidController;
+
+  @override
+  void initState() {
+    super.initState();
+    enlarge = false;
+    slideUp = false;
+    dueCardTransparent = false;
+    enlargedTextTransparent = true;
+    Future.delayed(Duration(milliseconds: 300), () {
+      print('DELAY');
+      setState(() {
+        enlargedTextTransparent = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,44 +88,141 @@ class _BigCardState extends State<BigCard> {
             bottomSheet: Container(
               color: Color(0xff171717),
               child: SolidBottomSheet(
-                minHeight: 0,
-                maxHeight: (740 - 64) * heightFactor,
+                minHeight: 220 * heightFactor,
+                maxHeight: 740 * heightFactor,
                 draggableBody: true,
+                controller: solidController,
                 canUserSwipe: true,
-                headerBar: Container(
-                  height: 72 * heightFactor,
-                  decoration: BoxDecoration(
-                      color: Color(0xFF1c1c1c),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-                  child: Center(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                        Container(
-                          height: 2 * heightFactor,
-                          width: 16 * widthFactor,
-                          decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.all(Radius.circular(12))),
-                        ),
-                        Container(
-                          child: Center(
-                            child: Text(
-                              "Recent transactions",
-                              style: mvpConstants.kBottomSheetHeaderText,
+                headerBar: Container(),
+                onHide: () {
+                  print('hide');
+                },
+                body: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 72 * heightFactor,
+                      decoration: BoxDecoration(
+                          color: Color(0xFF1c1c1c),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+                      child: Center(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                            Container(
+                              height: 2 * heightFactor,
+                              width: 16 * widthFactor,
+                              decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.all(Radius.circular(12))),
                             ),
-                          ),
-                        )
-                      ])),
-                ),
-                body: SpendsList(
-                  width: constraints.maxWidth,
-                  physics: ScrollPhysics(),
-                  spendsObject: SpendsObject(),
-                  height_factor: heightFactor,
-                  width_factor: widthFactor,
+                            Container(
+                              child: Center(
+                                child: Text(
+                                  "Recent transactions",
+                                  style: mvpConstants.kBottomSheetHeaderText,
+                                ),
+                              ),
+                            )
+                          ])),
+                    ),
+                    SizedBox(
+                      height: 40 * heightFactor,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Spends done in June', style: TextStyle(color: Color(0x88ffffff))),
+                        SizedBox(
+                          width: 134 * widthFactor,
+                        ),
+                        Text('₹3456',
+                            style:
+                                TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20 * heightFactor,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: 3,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: <Widget>[
+                              Container(
+                                height: 61 * heightFactor,
+                                width: 328 * widthFactor,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF27292d),
+                                  borderRadius: BorderRadius.all(Radius.circular(6)),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              left: 8 * widthFactor,
+                                              bottom: 10 * heightFactor,
+                                            ),
+                                            child: Container(
+                                              height: 40 * heightFactor,
+                                              width: 40 * widthFactor,
+                                              child: SvgPicture.asset(
+                                                'assets/expense_category_icons/Food.svg',
+                                                semanticsLabel: 'idea',
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                              left: 11 * widthFactor,
+                                              bottom: 6 * heightFactor,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  'Leon Grill',
+                                                  style: mvpConstants.spendCardName,
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: 8),
+                                                  child: Text(
+                                                    "Today, 11:43AM",
+                                                    style: mvpConstants.spendCardDate,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.only(
+                                            bottom: 33 * heightFactor, right: 8 * widthFactor),
+                                        child: Text(
+                                          "₹30",
+                                          style: mvpConstants.spendCardAmountNegativeAmount,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(height: 12 * heightFactor)
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -119,12 +234,26 @@ class _BigCardState extends State<BigCard> {
                   SizedBox(height: 28 * heightFactor),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      setState(() {
+                        // solidController.hide();
+                        slideUp = true;
+                        Future.delayed(Duration(milliseconds: 240), () {
+                          setState(() {
+                            dueCardTransparent = true;
+                          });
+                          Future.delayed(Duration(milliseconds: 10), () {
+                            Navigator.pop(context);
+                          });
+                        });
+                      });
                     },
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 14 * widthFactor,
-                      color: Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 20.0),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 20 * widthFactor,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   SizedBox(height: 26 * heightFactor),
@@ -134,8 +263,9 @@ class _BigCardState extends State<BigCard> {
                       alignment: Alignment.topLeft,
                       children: <Widget>[
                         AnimatedPositioned(
-                          duration: Duration(milliseconds: 1000),
-                          top: slideUp ? 0 : 240,
+                          duration: Duration(milliseconds: 500),
+                          top: slideUp ? 20 : 240,
+                          curve: Curves.ease,
                           child: Opacity(
                             opacity: dueCardTransparent ? 0 : 1,
                             child: Container(
@@ -260,16 +390,7 @@ class _BigCardState extends State<BigCard> {
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
-                                slideUp = true;
-                                Future.delayed(Duration(milliseconds: 990), () {
-                                  setState(() {
-                                    dueCardTransparent = true;
-                                  });
-
-                                  Future.delayed(Duration(milliseconds: 10), () {
-                                    Navigator.pop(context);
-                                  });
-                                });
+                                slideUp = !slideUp;
                               });
                             },
                             child: SizedBox(
@@ -283,72 +404,80 @@ class _BigCardState extends State<BigCard> {
                                     ),
                                     quarterTurns: 1,
                                   ),
-                                  Container(
-                                    padding: EdgeInsets.only(
-                                        left: 40 * widthFactor,
-                                        right: 45 * widthFactor,
-                                        top: 17 * heightFactor),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          '${widget.orgName}',
-                                          style: cardSharingConstants.kBankNameStyle,
-                                        ),
-                                        SizedBox(height: 43 * heightFactor),
-                                        Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  'Available Limit',
-                                                  style: cardSharingConstants.kEnlargedBodyStyle,
-                                                ),
-                                                Text(
-                                                  '₹${widget.balance}',
-                                                  style: cardSharingConstants
-                                                      .kEnlargedAvailableAmountStyle,
-                                                ),
-                                              ],
-                                            ),
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  'Spent this month',
-                                                  style: cardSharingConstants.kEnlargedBodyStyle,
-                                                ),
-                                                Text(
-                                                  '₹${widget.spentThisMonth}',
-                                                  style: cardSharingConstants
-                                                      .kEnlargedSpentAmountStyle,
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 48 * heightFactor),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Row(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                  AnimatedOpacity(
+                                    duration: Duration(milliseconds: 700),
+                                    curve: Curves.easeIn,
+                                    opacity: enlargedTextTransparent ? 0 : 1,
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          left: 40 * widthFactor,
+                                          right: 45 * widthFactor,
+                                          top: 17 * heightFactor),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            '${widget.orgName}',
+                                            style: cardSharingConstants.kBankNameStyle,
+                                          ),
+                                          SizedBox(height: 43 * heightFactor),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: <Widget>[
-                                                  Text('**** **** **** ',
-                                                      style: cardSharingConstants.kCardNumberStyle),
-                                                  Text('${widget.accountNumber.substring(12, 16)}',
-                                                      style: cardSharingConstants.kCardNumberStyle),
-                                                ]),
-                                            Text(
-                                              '${widget.accountType.toUpperCase()}',
-                                              style: cardSharingConstants.kCardTypeStyle,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                                  Text(
+                                                    'Available Limit',
+                                                    style: cardSharingConstants.kEnlargedBodyStyle,
+                                                  ),
+                                                  Text(
+                                                    '₹${widget.balance}',
+                                                    style: cardSharingConstants
+                                                        .kEnlargedAvailableAmountStyle,
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    'Spent this month',
+                                                    style: cardSharingConstants.kEnlargedBodyStyle,
+                                                  ),
+                                                  Text(
+                                                    '₹${widget.spentThisMonth}',
+                                                    style: cardSharingConstants
+                                                        .kEnlargedSpentAmountStyle,
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(height: 48 * heightFactor),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Text('**** **** **** ',
+                                                        style:
+                                                            cardSharingConstants.kCardNumberStyle),
+                                                    Text(
+                                                        '${widget.accountNumber.substring(12, 16)}',
+                                                        style:
+                                                            cardSharingConstants.kCardNumberStyle),
+                                                  ]),
+                                              Text(
+                                                '${widget.accountType.toUpperCase()}',
+                                                style: cardSharingConstants.kCardTypeStyle,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   )
                                 ],

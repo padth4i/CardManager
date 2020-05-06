@@ -91,7 +91,7 @@ class _CardSharingState extends State<CardSharing> {
                 ),
                 SizedBox(height: 21 * heightFactor),
                 SizedBox(
-                  height: 222 / heightFactor,
+                  height: 230 / heightFactor,
                   child: ListView.builder(
                     primary: false,
                     scrollDirection: Axis.horizontal,
@@ -100,65 +100,91 @@ class _CardSharingState extends State<CardSharing> {
                         : ScrollPhysics(),
                     itemCount: mockAccounts.list.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                  transitionDuration: Duration(milliseconds: 600),
-                                  pageBuilder: (_, __, ___) => BigCard(
-                                        accountNumber: mockAccounts.list[index].account_number,
-                                        balance: mockAccounts.list[index].balance,
-                                        orgName: mockAccounts.list[index].org_name,
-                                        spentThisMonth: mockAccounts.list[index].spent_this_month,
-                                        accountType: mockAccounts.list[index].account_type,
-                                        cardImage: cardImages[index % 3],
-                                        cardIndex: index,
-                                      )));
-                        },
-                        child: Hero(
-                          flightShuttleBuilder: (
-                            BuildContext flightContext,
-                            Animation<double> animation,
-                            HeroFlightDirection flightDirection,
-                            BuildContext fromHeroContext,
-                            BuildContext toHeroContext,
-                          ) {
-                            final Hero toHero = toHeroContext.widget;
-                            return RotationTransition(
-                              // turns: animation.drive(Tween(begin: 0, end: -0.05)),
-                              turns: Tween<double>(begin: 0, end: -0.25)
-                                  .animate(CurvedAnimation(curve: Curves.ease, parent: animation)),
-                              child: toHero.child,
-                            );
-                          },
-                          tag: 'card_$index',
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
-                            child: mockAccounts.list[index].account_type == 'credit'
-                                ? CreditCard(
-                                    accountNumber: mockAccounts.list[index].account_number,
-                                    balance: mockAccounts.list[index].balance,
-                                    cardColor: cardImages[index % 3],
-                                    heightFactor: heightFactor,
-                                    widthFactor: widthFactor,
-                                    orgName: mockAccounts.list[index].org_name,
-                                    spentThisMonth: mockAccounts.list[index].spent_this_month,
-                                    textScaleFactor: queryData.textScaleFactor,
-                                  )
-                                : DebitCard(
-                                    accountNumber: mockAccounts.list[index].account_number,
-                                    balance: mockAccounts.list[index].balance,
-                                    cardColor: cardImages[index % 3],
-                                    heightFactor: heightFactor,
-                                    widthFactor: widthFactor,
-                                    orgName: mockAccounts.list[index].org_name,
-                                    spentThisMonth: mockAccounts.list[index].spent_this_month,
-                                    textScaleFactor: queryData.textScaleFactor,
-                                  ),
+                      return Stack(
+                        children: <Widget>[
+                          Hero(
+                            flightShuttleBuilder: (
+                              BuildContext flightContext,
+                              Animation<double> animation,
+                              HeroFlightDirection flightDirection,
+                              BuildContext fromHeroContext,
+                              BuildContext toHeroContext,
+                            ) {
+                              final Hero toHero = toHeroContext.widget;
+                              return RotationTransition(
+                                // turns: animation.drive(Tween(begin: 0, end: -0.05)),
+                                turns: Tween<double>(begin: 0, end: 0.25).animate(
+                                    CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                child: toHero.child,
+                              );
+                            },
+                            tag: 'card_$index',
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: index == 0 ? 16 * widthFactor : 0,
+                                  right: 9.0 * widthFactor),
+                              child: mockAccounts.list[index].account_type == 'credit'
+                                  ? CreditCard(
+                                      accountNumber: mockAccounts.list[index].account_number,
+                                      balance: mockAccounts.list[index].balance,
+                                      cardColor: cardImages[index % 3],
+                                      heightFactor: heightFactor,
+                                      widthFactor: widthFactor,
+                                      orgName: mockAccounts.list[index].org_name,
+                                      spentThisMonth: mockAccounts.list[index].spent_this_month,
+                                      textScaleFactor: queryData.textScaleFactor,
+                                      accountType: mockAccounts.list[index].account_type,
+                                      index: index,
+                                    )
+                                  : DebitCard(
+                                      accountNumber: mockAccounts.list[index].account_number,
+                                      balance: mockAccounts.list[index].balance,
+                                      cardColor: cardImages[index % 3],
+                                      heightFactor: heightFactor,
+                                      widthFactor: widthFactor,
+                                      orgName: mockAccounts.list[index].org_name,
+                                      spentThisMonth: mockAccounts.list[index].spent_this_month,
+                                      textScaleFactor: queryData.textScaleFactor,
+                                      accountType: mockAccounts.list[index].account_type,
+                                      index: index
+                                    ),
+                            ),
                           ),
-                        ),
+                          // Positioned(
+                          //   left: 13 * widthFactor,
+                          //   top: 180 * heightFactor,
+                          //   child: GestureDetector(
+                              // onTap: () {
+                              //   Navigator.push(
+                              //       context,
+                              //       PageRouteBuilder(
+                              //           transitionDuration: Duration(milliseconds: 750),
+                              //           pageBuilder: (_, __, ___) => BigCard(
+                              //                 accountNumber:
+                              //                     mockAccounts.list[index].account_number,
+                              //                 balance: mockAccounts.list[index].balance,
+                              //                 orgName: mockAccounts.list[index].org_name,
+                              //                 spentThisMonth:
+                              //                     mockAccounts.list[index].spent_this_month,
+                              //                 accountType: mockAccounts.list[index].account_type,
+                              //                 cardImage: cardImages[index % 3],
+                              //                 cardIndex: index,
+                              //               )));
+                              // },
+                          //     child: Container(
+                          //       height: 18 * heightFactor,
+                          //       width: 136 * widthFactor,
+                          //       decoration: BoxDecoration(
+                          //           color: Color(0x4dffffff),
+                          //           borderRadius: BorderRadius.circular(2)),
+                          //       child: Center(
+                          //         child: Text('👆TAP TO SEE DETAILS',
+                          //             style: cardSharingConstants.kDueBillButton),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
                       );
                     },
                   ),

@@ -31,7 +31,6 @@ class _CreditCardState extends State<CreditCard> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 600), () {
-      print('milk bikis');
       if (mounted)
         setState(() {
           isVisible = true;
@@ -66,19 +65,14 @@ class _CreditCardState extends State<CreditCard> {
       Stack(
         children: <Widget>[
           SizedBox(
-            // height: 242 * widget.heightFactor,
             width: 160 * widget.widthFactor,
             child: Image.asset(
               'assets/card_sharing/new_${widget.cardColor}.png',
-              // 'assets/card_sharing/red.png',
-              // height: 242 * heightFactor,
-              
-              fit: BoxFit.fitWidth,
             ),
           ),
           AnimatedOpacity(
             opacity: isVisible ? 1 : 0,
-            duration: Duration(milliseconds: 150),
+            duration: Duration(milliseconds: 200),
             child: Container(
               padding: EdgeInsets.only(left: 13 * widget.widthFactor),
               child: Column(

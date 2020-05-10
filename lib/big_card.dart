@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:card_manager/constants/mvp_constants.dart';
 import 'package:card_manager/data/spends_object.dart';
@@ -53,10 +54,10 @@ class _BigCardState extends State<BigCard> {
 
   bool enlarge = false;
   MvpConstants mvpConstants;
-  bool slideUp = false;
-  bool dueCardTransparent = false;
+  bool slideUp = true;
+  bool dueCardTransparent = true;
   bool enlargedTextTransparent = true;
-  double sheetMaxHeight = 240, sheetMinHeight = 0;
+  double sheetMaxHeight = 534, sheetMinHeight = 0;
   SolidController solidController = SolidController();
 
   @override
@@ -65,6 +66,8 @@ class _BigCardState extends State<BigCard> {
     setState(() {
       Future.delayed(Duration(milliseconds: 300), () {
         enlargedTextTransparent = false;
+        dueCardTransparent = false;
+        slideUp = false;
         solidController.show();
         Future.delayed(Duration(milliseconds: 200), () {
           setState(() {
@@ -97,7 +100,7 @@ class _BigCardState extends State<BigCard> {
         if (solidController.isOpened)
           sheetMaxHeight = 740;
         else
-          sheetMaxHeight = 200;
+          sheetMaxHeight = 534;
         solidController.show();
         sheetMinHeight = 0;
         solidController.hide();
@@ -144,7 +147,7 @@ class _BigCardState extends State<BigCard> {
                   draggableBody: true,
                   controller: solidController,
                   canUserSwipe: true,
-                  headerBar: Container(),
+                  headerBar: Container(height: 0,),
                   onHide: () {
                     print('hide');
                   },
@@ -184,17 +187,19 @@ class _BigCardState extends State<BigCard> {
                       SizedBox(
                         height: 40 * heightFactor,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text('Spends done in June', style: TextStyle(color: Color(0x88ffffff))),
-                          SizedBox(
-                            width: 134 * widthFactor,
-                          ),
-                          Text('₹3456',
-                              style:
-                                  TextStyle(color: Color(0xffffffff), fontWeight: FontWeight.w600)),
-                        ],
+                      Container(
+                        padding: EdgeInsets.only(left: 24 * widthFactor, right: 24 * widthFactor),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text('Spends done in June',
+                                style: cardSharingConstants.kBottomSheetDate),
+                            SizedBox(
+                              width: 134 * widthFactor,
+                            ),
+                            Text('₹3456', style: cardSharingConstants.kBottomSheetValue),
+                          ],
+                        ),
                       ),
                       SizedBox(
                         height: 20 * heightFactor,
@@ -287,7 +292,7 @@ class _BigCardState extends State<BigCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(height: 28 * heightFactor),
+                    SizedBox(height: 24 * heightFactor),
                     // GestureDetector(
                     //   onTap: () {
                     //     setState(() {
@@ -329,7 +334,7 @@ class _BigCardState extends State<BigCard> {
                         children: <Widget>[
                           AnimatedPositioned(
                             duration: Duration(milliseconds: 500),
-                            top: slideUp ? 20 * heightFactor : 274 * heightFactor,
+                            top: slideUp ? 20 * heightFactor : 230 * heightFactor,
                             curve: Curves.easeIn,
                             child: Opacity(
                               opacity: dueCardTransparent ? 0 : 1,
@@ -460,12 +465,16 @@ class _BigCardState extends State<BigCard> {
                                 alignment: Alignment.topCenter,
                                 children: <Widget>[
                                   RotatedBox(
-                                    child: Image.asset(
-                                      'assets/card_sharing/new_${widget.cardImage}.png',
-                                      height: 320 * widthFactor,
+                                    //  Transform.rotate(
+                                      // angle: pi / 2,
+                                      quarterTurns: 1,
+                                      child: Image.asset(
+                                        'assets/card_sharing/new_${widget.cardImage}.png',
+                                        // width: 188 * heightFactor,
+                                        height: 320 * widthFactor,
+                                      ),
                                     ),
-                                    quarterTurns: 1,
-                                  ),
+                                  
                                   AnimatedOpacity(
                                     duration: Duration(milliseconds: 450),
                                     curve: Curves.easeIn,
@@ -482,7 +491,7 @@ class _BigCardState extends State<BigCard> {
                                             '${widget.orgName}',
                                             style: cardSharingConstants.kBankNameStyle,
                                           ),
-                                          SizedBox(height: 43 * heightFactor),
+                                          SizedBox(height: 47 * heightFactor),
                                           Row(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

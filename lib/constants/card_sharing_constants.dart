@@ -20,7 +20,9 @@ class CardSharingConstants {
       kTotalDueStyle,
       kMinimumDueStyle,
       kDueDateStyle,
-      kWalletNameStyle;
+      kWalletNameStyle,
+      kBottomSheetDate,
+      kBottomSheetValue;
 
   CardSharingConstants(double textScale) {
     this.textScaleFactor = textScale;
@@ -134,6 +136,18 @@ class CardSharingConstants {
       fontFamily: 'HKGrotesk',
       fontWeight: FontWeight.w600,
       color: Color(0xffffffff),
+    );
+    this.kBottomSheetDate = TextStyle(
+      fontSize: 14.0 / textScaleFactor,
+      color: Color(0x88ffffff),
+      fontFamily: 'HKGrotesk',
+      fontWeight: FontWeight.w500,
+    );
+    this.kBottomSheetValue = TextStyle(
+      fontSize: 14.0 / textScaleFactor,
+      fontFamily: 'HKGrotesk',
+      color: Color(0xffffffff),
+      fontWeight: FontWeight.w600,
     );
   }
 }

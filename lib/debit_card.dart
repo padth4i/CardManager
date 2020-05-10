@@ -30,7 +30,6 @@ class _DebitCardState extends State<DebitCard> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 400), () {
-      print('tiger balm');
       if (mounted)
         setState(() {
           isVisible = true;
@@ -65,19 +64,14 @@ class _DebitCardState extends State<DebitCard> {
        Stack(
         children: <Widget>[
           SizedBox(
-            // height: 242 * widget.heightFactor,
             width: 160 * widget.widthFactor,
             child: Image.asset(
               'assets/card_sharing/new_${widget.cardColor}.png',
-              // 'assets/card_sharing/red.png',
-              // height: 242 * widget.heightFactor,
-              // width: 160 * widget.widthFactor,
-              fit: BoxFit.fitWidth,
             ),
           ),
           AnimatedOpacity(
             opacity: isVisible ? 1 : 0,
-            duration: Duration(milliseconds: 150),
+            duration: Duration(milliseconds: 200),
             child: Container(
               padding: EdgeInsets.only(left: 13 * widget.widthFactor),
               child: Column(

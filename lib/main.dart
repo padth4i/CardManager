@@ -77,110 +77,121 @@ class _CardSharingState extends State<CardSharing> {
           widthFactor = constraints.maxWidth / 360;
           return Scaffold(
             backgroundColor: Color(0xff171717),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            body: Stack(
               children: <Widget>[
-                SizedBox(height: 36 * heightFactor),
-                Row(
-                  children: <Widget>[
-                    SizedBox(width: 16 * widthFactor),
-                    SvgPicture.asset('assets/card_sharing/icon.svg'),
-                    SizedBox(width: 6 * widthFactor),
-                    Text('My Cards', style: cardSharingConstants.kHeadingStyle),
-                  ],
-                ),
-                SizedBox(height: 21 * heightFactor),
-                SizedBox(
-                  height: 230 / heightFactor,
-                  child: ListView.builder(
-                    primary: false,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: mockAccounts.list.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                  transitionDuration: Duration(milliseconds: 400),
-                                  pageBuilder: (_, __, ___) => BigCard(
-                                        accountNumber: mockAccounts.list[index].account_number,
-                                        balance: mockAccounts.list[index].balance,
-                                        orgName: mockAccounts.list[index].org_name,
-                                        spentThisMonth: mockAccounts.list[index].spent_this_month,
-                                        accountType: mockAccounts.list[index].account_type,
-                                        cardImage: cardImages[index % 3],
-                                        cardIndex: index,
-                                      )));
-                        },
-                        child: Hero(
-                          flightShuttleBuilder: (
-                            BuildContext flightContext,
-                            Animation<double> animation,
-                            HeroFlightDirection flightDirection,
-                            BuildContext fromHeroContext,
-                            BuildContext toHeroContext,
-                          ) {
-                            final Hero toHero = toHeroContext.widget;
-                            return RotationTransition(
-                              turns: Tween<double>(begin: 0, end: 0.25)
-                                  .animate(CurvedAnimation(curve: Curves.ease, parent: animation)),
-                              child: toHero.child,
-                            );
-                          },
-                          tag: 'card_$index',
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
-                            child: mockAccounts.list[index].account_type == 'credit'
-                                ? CreditCard(
-                                    accountNumber: mockAccounts.list[index].account_number,
-                                    balance: mockAccounts.list[index].balance,
-                                    cardColor: cardImages[index % 3],
-                                    heightFactor: heightFactor,
-                                    widthFactor: widthFactor,
-                                    orgName: mockAccounts.list[index].org_name,
-                                    spentThisMonth: mockAccounts.list[index].spent_this_month,
-                                    textScaleFactor: queryData.textScaleFactor,
-                                    accountType: mockAccounts.list[index].account_type,
-                                    index: index,
-                                  )
-                                : DebitCard(
-                                    accountNumber: mockAccounts.list[index].account_number,
-                                    balance: mockAccounts.list[index].balance,
-                                    cardColor: cardImages[index % 3],
-                                    heightFactor: heightFactor,
-                                    widthFactor: widthFactor,
-                                    orgName: mockAccounts.list[index].org_name,
-                                    spentThisMonth: mockAccounts.list[index].spent_this_month,
-                                    textScaleFactor: queryData.textScaleFactor,
-                                    accountType: mockAccounts.list[index].account_type,
-                                    index: index),
-                          ),
-                        ),
-                      );
-                    },
+                Positioned(
+                  top: 36 * heightFactor,
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(width: 16 * widthFactor),
+                      SvgPicture.asset('assets/card_sharing/icon.svg'),
+                      SizedBox(width: 6 * widthFactor),
+                      Text('My Cards', style: cardSharingConstants.kHeadingStyle),
+                    ],
                   ),
                 ),
-                SizedBox(height: 34 * heightFactor),
-                Row(
-                  children: <Widget>[
-                    SizedBox(width: 16 * widthFactor),
-                    SvgPicture.asset('assets/card_sharing/icon.svg'),
-                    SizedBox(width: 6 * widthFactor),
-                    Text('My Wallets', style: cardSharingConstants.kHeadingStyle),
-                  ],
+                Positioned(
+                  top: 80 * heightFactor,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SizedBox(
+                    height: 242 * 1.51 * heightFactor,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: mockAccounts.list.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    transitionDuration: Duration(milliseconds: 600),
+                                    pageBuilder: (_, __, ___) => BigCard(
+                                          accountNumber: mockAccounts.list[index].account_number,
+                                          balance: mockAccounts.list[index].balance,
+                                          orgName: mockAccounts.list[index].org_name,
+                                          spentThisMonth: mockAccounts.list[index].spent_this_month,
+                                          accountType: mockAccounts.list[index].account_type,
+                                          cardImage: cardImages[index % 3],
+                                          cardIndex: index,
+                                        )));
+                          },
+                          child: Hero(
+                            flightShuttleBuilder: (
+                              BuildContext flightContext,
+                              Animation<double> animation,
+                              HeroFlightDirection flightDirection,
+                              BuildContext fromHeroContext,
+                              BuildContext toHeroContext,
+                            ) {
+                              final Hero toHero = toHeroContext.widget;
+                              return RotationTransition(
+                                turns: Tween<double>(begin: 0, end: 0.25).animate(
+                                    CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                child: toHero.child,
+                              );
+                            },
+                            tag: 'card_$index',
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: index == 0 ? 16 * widthFactor : 0,
+                                  right: 9.0 * widthFactor),
+                              child: mockAccounts.list[index].account_type == 'credit'
+                                  ? CreditCard(
+                                      accountNumber: mockAccounts.list[index].account_number,
+                                      balance: mockAccounts.list[index].balance,
+                                      cardColor: cardImages[index % 3],
+                                      heightFactor: heightFactor,
+                                      widthFactor: widthFactor,
+                                      orgName: mockAccounts.list[index].org_name,
+                                      spentThisMonth: mockAccounts.list[index].spent_this_month,
+                                      textScaleFactor: queryData.textScaleFactor,
+                                      accountType: mockAccounts.list[index].account_type,
+                                      index: index,
+                                    )
+                                  : DebitCard(
+                                      accountNumber: mockAccounts.list[index].account_number,
+                                      balance: mockAccounts.list[index].balance,
+                                      cardColor: cardImages[index % 3],
+                                      heightFactor: heightFactor,
+                                      widthFactor: widthFactor,
+                                      orgName: mockAccounts.list[index].org_name,
+                                      spentThisMonth: mockAccounts.list[index].spent_this_month,
+                                      textScaleFactor: queryData.textScaleFactor,
+                                      accountType: mockAccounts.list[index].account_type,
+                                      index: index),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
-                SizedBox(height: 21 * heightFactor),
-                SizedBox(
-                  height: 150 / heightFactor,
-                  child: ListView.builder(
-                    primary: false,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 2,
-                    itemBuilder: (context, index) {
-                      return Padding(
+                Positioned(
+                  top: 380 * heightFactor,
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(width: 16 * widthFactor),
+                      SvgPicture.asset('assets/card_sharing/icon.svg'),
+                      SizedBox(width: 6 * widthFactor),
+                      Text('My Wallets', style: cardSharingConstants.kHeadingStyle),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 420 * heightFactor,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SizedBox(
+                    height: 150 * heightFactor,
+                    child: ListView.builder(
+                      primary: false,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Padding(
                           padding: EdgeInsets.only(
                               left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
                           child: Row(
@@ -226,12 +237,169 @@ class _CardSharingState extends State<CardSharing> {
                                 ],
                               )
                             ],
-                          ));
-                    },
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                )
+                ),
               ],
             ),
+            //   body: Column(
+            //     mainAxisAlignment: MainAxisAlignment.start,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: <Widget>[
+            //       SizedBox(height: 36 * heightFactor),
+            //       Row(
+            //         children: <Widget>[
+            //           SizedBox(width: 16 * widthFactor),
+            //           SvgPicture.asset('assets/card_sharing/icon.svg'),
+            //           SizedBox(width: 6 * widthFactor),
+            //           Text('My Cards', style: cardSharingConstants.kHeadingStyle),
+            //         ],
+            //       ),
+            //       SizedBox(height: 21 * heightFactor),
+            // SizedBox(
+            //   height: 242 * 1.51 * heightFactor,
+            //   child: ListView.builder(
+            //     primary: false,
+            //     scrollDirection: Axis.horizontal,
+            //     itemCount: mockAccounts.list.length,
+            //     itemBuilder: (context, index) {
+            //       return GestureDetector(
+            //         onTap: () {
+            //           Navigator.push(
+            //               context,
+            //               PageRouteBuilder(
+            //                   transitionDuration: Duration(milliseconds: 600),
+            //                   pageBuilder: (_, __, ___) => BigCard(
+            //                         accountNumber: mockAccounts.list[index].account_number,
+            //                         balance: mockAccounts.list[index].balance,
+            //                         orgName: mockAccounts.list[index].org_name,
+            //                         spentThisMonth: mockAccounts.list[index].spent_this_month,
+            //                         accountType: mockAccounts.list[index].account_type,
+            //                         cardImage: cardImages[index % 3],
+            //                         cardIndex: index,
+            //                       )));
+            //         },
+            //         child: Hero(
+            //           flightShuttleBuilder: (
+            //             BuildContext flightContext,
+            //             Animation<double> animation,
+            //             HeroFlightDirection flightDirection,
+            //             BuildContext fromHeroContext,
+            //             BuildContext toHeroContext,
+            //           ) {
+            //             final Hero toHero = toHeroContext.widget;
+            //             return RotationTransition(
+            //               turns: Tween<double>(begin: 0, end: 0.25)
+            //                   .animate(CurvedAnimation(curve: Curves.ease, parent: animation)),
+            //               child: toHero.child,
+            //             );
+            //           },
+            //           tag: 'card_$index',
+            //           child: Padding(
+            //             padding: EdgeInsets.only(
+            //                 left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
+            //             child: mockAccounts.list[index].account_type == 'credit'
+            //                 ? CreditCard(
+            //                     accountNumber: mockAccounts.list[index].account_number,
+            //                     balance: mockAccounts.list[index].balance,
+            //                     cardColor: cardImages[index % 3],
+            //                     heightFactor: heightFactor,
+            //                     widthFactor: widthFactor,
+            //                     orgName: mockAccounts.list[index].org_name,
+            //                     spentThisMonth: mockAccounts.list[index].spent_this_month,
+            //                     textScaleFactor: queryData.textScaleFactor,
+            //                     accountType: mockAccounts.list[index].account_type,
+            //                     index: index,
+            //                   )
+            //                 : DebitCard(
+            //                     accountNumber: mockAccounts.list[index].account_number,
+            //                     balance: mockAccounts.list[index].balance,
+            //                     cardColor: cardImages[index % 3],
+            //                     heightFactor: heightFactor,
+            //                     widthFactor: widthFactor,
+            //                     orgName: mockAccounts.list[index].org_name,
+            //                     spentThisMonth: mockAccounts.list[index].spent_this_month,
+            //                     textScaleFactor: queryData.textScaleFactor,
+            //                     accountType: mockAccounts.list[index].account_type,
+            //                     index: index),
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
+            //       SizedBox(height: 34 * heightFactor),
+            // Row(
+            //   children: <Widget>[
+            //     SizedBox(width: 16 * widthFactor),
+            //     SvgPicture.asset('assets/card_sharing/icon.svg'),
+            //     SizedBox(width: 6 * widthFactor),
+            //     Text('My Wallets', style: cardSharingConstants.kHeadingStyle),
+            //   ],
+            // ),
+            //       SizedBox(height: 21 * heightFactor),
+            //       SizedBox(
+            //         height: 150 *  heightFactor,
+            //         child: ListView.builder(
+            //           primary: false,
+            //           scrollDirection: Axis.horizontal,
+            //           itemCount: 2,
+            //           itemBuilder: (context, index) {
+            //             return Padding(
+            //                 padding: EdgeInsets.only(
+            //                     left: index == 0 ? 16 * widthFactor : 0, right: 9.0 * widthFactor),
+            //                 child: Row(
+            //                   children: <Widget>[
+            //                     Stack(
+            //                       children: <Widget>[
+            //                         Image.asset(
+            //                           'assets/card_sharing/wallet_${walletImages[index % 2]}.png',
+            //                           width: 160 * widthFactor,
+            //                         ),
+            //                         Container(
+            //                           padding: EdgeInsets.only(
+            //                               left: 15 * widthFactor, top: 14 * heightFactor),
+            //                           child: Column(
+            //                             crossAxisAlignment: CrossAxisAlignment.start,
+            //                             children: <Widget>[
+            //                               Text(
+            //                                 'Flipkart Paylater',
+            //                                 style: cardSharingConstants.kWalletNameStyle,
+            //                               ),
+            //                               SizedBox(height: 4 * heightFactor),
+            //                               RichText(
+            //                                 text: TextSpan(
+            //                                   children: <TextSpan>[
+            //                                     TextSpan(
+            //                                         text: 'Pay by ',
+            //                                         style: cardSharingConstants.kDueBodyStyle),
+            //                                     TextSpan(
+            //                                         text: '14th April',
+            //                                         style: cardSharingConstants.kDueDateStyle)
+            //                                   ],
+            //                                 ),
+            //                               ),
+            //                               SizedBox(height: 14 * heightFactor),
+            //                               Text(
+            //                                 '₹69,952',
+            //                                 style: cardSharingConstants.kAvailableAmountStyle,
+            //                               ),
+            //                               Text('this month', style: cardSharingConstants.kBodyStyle),
+            //                             ],
+            //                           ),
+            //                         )
+            //                       ],
+            //                     )
+            //                   ],
+            //                 ));
+            //           },
+            //         ),
+            //       )
+            //     ],
+            //   ),
           );
         },
       ),

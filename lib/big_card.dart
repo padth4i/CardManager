@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:card_manager/constants/mvp_constants.dart';
 import 'package:card_manager/data/spends_object.dart';
+import 'package:card_manager/solidBottomSheet.dart' as bottomSheet;
 import 'package:card_manager/spends_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,6 +36,7 @@ class BigCard extends StatefulWidget {
 class _BigCardState extends State<BigCard> {
   CardSharingConstants cardSharingConstants;
   double heightFactor, widthFactor;
+  bool isVisible = false;
 
   static final mockAccounts = MockAccounts();
   final mockStatements = MockStatements();
@@ -57,23 +59,27 @@ class _BigCardState extends State<BigCard> {
   bool slideUp = true;
   bool dueCardTransparent = true;
   bool enlargedTextTransparent = true;
-  double sheetMaxHeight = 534, sheetMinHeight = 0;
+  double sheetMaxHeight = 250, sheetMinHeight = 0;
   SolidController solidController = SolidController();
 
   @override
   void initState() {
     super.initState();
     setState(() {
-      Future.delayed(Duration(milliseconds: 300), () {
+      Future.delayed(Duration(milliseconds: 700), () {
         enlargedTextTransparent = false;
         dueCardTransparent = false;
-        slideUp = false;
         solidController.show();
         Future.delayed(Duration(milliseconds: 200), () {
           setState(() {
-            sheetMinHeight = 240;
+            sheetMinHeight = 250;
             solidController.hide();
             sheetMaxHeight = 740;
+            Future.delayed(Duration(milliseconds: 300), () {
+              setState(() {
+                slideUp = false;
+              });
+            });
           });
         });
       });
@@ -100,7 +106,7 @@ class _BigCardState extends State<BigCard> {
         if (solidController.isOpened)
           sheetMaxHeight = 740;
         else
-          sheetMaxHeight = 534;
+          sheetMaxHeight = 250;
         solidController.show();
         sheetMinHeight = 0;
         solidController.hide();
@@ -110,6 +116,7 @@ class _BigCardState extends State<BigCard> {
           });
         }).then((onValue) {
           Future.delayed(Duration(milliseconds: 100), () {
+            isVisible = true;
             Navigator.pop(context);
           });
           // Navigator.pop(context);
@@ -132,11 +139,13 @@ class _BigCardState extends State<BigCard> {
           builder: (BuildContext context, BoxConstraints constraints) {
             heightFactor = constraints.maxHeight / 740;
             widthFactor = constraints.maxWidth / 360;
+            print(heightFactor);
+            print(widthFactor);
             return Scaffold(
               backgroundColor: Color(0xff171717),
               bottomSheet: Container(
                 color: Color(0xff171717),
-                child: SolidBottomSheet(
+                child: bottomSheet.SolidBottomSheet(
                   // minHeight:  ? 0 : 240 * heightFactor,
                   // minHeight: 0,
                   // maxHeight:  ? 240 * heightFactor : 740 * heightFactor,
@@ -147,143 +156,174 @@ class _BigCardState extends State<BigCard> {
                   draggableBody: true,
                   controller: solidController,
                   canUserSwipe: true,
-                  headerBar: Container(height: 0,),
+                  headerBar: Container(
+                    color: Colors.transparent,
+                  ),
                   onHide: () {
                     print('hide');
                   },
                   onShow: () {
                     print('show');
                   },
-                  body: Column(
-                    children: <Widget>[
-                      Container(
-                        height: 72 * heightFactor,
-                        decoration: BoxDecoration(
-                            color: Color(0xFF1c1c1c),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-                        child: Center(
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                              Container(
-                                height: 2 * heightFactor,
-                                width: 16 * widthFactor,
-                                decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.all(Radius.circular(12))),
-                              ),
-                              Container(
-                                child: Center(
-                                  child: Text(
-                                    "Recent transactions",
-                                    style: mvpConstants.kBottomSheetHeaderText,
+                  body: Container(
+                    color: Color(0xFF1f2023),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          color: Color(0xFF171717),
+                          child: Container(
+                            height: 72 * heightFactor,
+                            decoration: BoxDecoration(
+                                color: Color(0xFF1f2023),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(14), topRight: Radius.circular(14))),
+                            child: Center(
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                  Container(
+                                    height: 2 * heightFactor,
+                                    width: 16 * widthFactor,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.all(Radius.circular(12))),
                                   ),
-                                ),
-                              )
-                            ])),
-                      ),
-                      SizedBox(
-                        height: 40 * heightFactor,
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left: 24 * widthFactor, right: 24 * widthFactor),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text('Spends done in June',
-                                style: cardSharingConstants.kBottomSheetDate),
-                            SizedBox(
-                              width: 134 * widthFactor,
-                            ),
-                            Text('₹3456', style: cardSharingConstants.kBottomSheetValue),
-                          ],
+                                  Container(
+                                    child: Center(
+                                      child: Text(
+                                        "Recent transactions",
+                                        style: mvpConstants.kBottomSheetHeaderText,
+                                      ),
+                                    ),
+                                  )
+                                ])),
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 20 * heightFactor,
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: 3,
-                          primary: false,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: <Widget>[
-                                Container(
-                                  height: 61 * heightFactor,
-                                  width: 328 * widthFactor,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF27292d),
-                                    borderRadius: BorderRadius.all(Radius.circular(6)),
+                        SingleChildScrollView(
+                          child: Container(
+                            height: 298 * heightFactor,
+                            width: 342 * widthFactor,
+                            decoration: BoxDecoration(
+                                color: Color(0xFF1f2023),
+                                border: Border.all(width: 2, color: Color(0x0cffffff)),
+                                borderRadius: BorderRadius.all(Radius.circular(8))),
+                            child: Column(children: <Widget>[
+                              Container(
+                                color: Color(0xFF1f2023),
+                                child: Column(children: <Widget>[
+                                  SizedBox(
+                                    height: 40 * heightFactor,
                                   ),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 10 * heightFactor),
+                                  Container(
+                                    padding: EdgeInsets.only(
+                                        left: 24 * widthFactor, right: 24 * widthFactor),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 8 * widthFactor,
-                                                bottom: 10 * heightFactor,
-                                              ),
-                                              child: Container(
-                                                height: 40 * heightFactor,
-                                                width: 40 * widthFactor,
-                                                child: SvgPicture.asset(
-                                                  'assets/expense_category_icons/Food.svg',
-                                                  semanticsLabel: 'idea',
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.only(
-                                                left: 11 * widthFactor,
-                                                bottom: 6 * heightFactor,
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Text(
-                                                    'Leon Grill',
-                                                    style: mvpConstants.spendCardName,
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(top: 8 * heightFactor),
-                                                    child: Text(
-                                                      "Today, 11:43AM",
-                                                      style: mvpConstants.spendCardDate,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.only(
-                                              bottom: 33 * heightFactor, right: 8 * widthFactor),
-                                          child: Text(
-                                            "₹30",
-                                            style: mvpConstants.spendCardAmountNegativeAmount,
-                                          ),
-                                        ),
+                                        Text('Spends done in June',
+                                            style: cardSharingConstants.kBottomSheetDate),
+                                        Text('₹3456',
+                                            style: cardSharingConstants.kBottomSheetValue),
                                       ],
                                     ),
                                   ),
+                                  SizedBox(
+                                    height: 20 * heightFactor,
+                                  ),
+                                ]),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: Color(0xFF1f2023),
+                                  child: ListView.builder(
+                                    itemCount: 3,
+                                    primary: false,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        children: <Widget>[
+                                          Container(
+                                            height: 61 * heightFactor,
+                                            width: 328 * widthFactor,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFF27292d),
+                                              borderRadius: BorderRadius.all(Radius.circular(6)),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.only(top: 10 * heightFactor),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: <Widget>[
+                                                  Row(
+                                                    children: <Widget>[
+                                                      Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8 * widthFactor,
+                                                          bottom: 10 * heightFactor,
+                                                        ),
+                                                        child: Container(
+                                                          height: 40 * heightFactor,
+                                                          width: 40 * widthFactor,
+                                                          child: SvgPicture.asset(
+                                                            'assets/expense_category_icons/Food.svg',
+                                                            semanticsLabel: 'idea',
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.only(
+                                                          left: 11 * widthFactor,
+                                                          bottom: 6 * heightFactor,
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.start,
+                                                          children: <Widget>[
+                                                            Text(
+                                                              'Leon Grill',
+                                                              style: mvpConstants.spendCardName,
+                                                            ),
+                                                            Padding(
+                                                              padding: EdgeInsets.only(
+                                                                  top: 8 * heightFactor),
+                                                              child: Text(
+                                                                "Today, 11:43AM",
+                                                                style: mvpConstants.spendCardDate,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    padding: EdgeInsets.only(
+                                                        bottom: 33 * heightFactor,
+                                                        right: 8 * widthFactor),
+                                                    child: Text(
+                                                      "₹30",
+                                                      style: mvpConstants
+                                                          .spendCardAmountNegativeAmount,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(height: 12 * heightFactor)
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ),
-                                Container(height: 12 * heightFactor)
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                              ),
+                            ]),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -334,7 +374,7 @@ class _BigCardState extends State<BigCard> {
                         children: <Widget>[
                           AnimatedPositioned(
                             duration: Duration(milliseconds: 500),
-                            top: slideUp ? 20 * heightFactor : 230 * heightFactor,
+                            top: slideUp ? 20 * heightFactor : 254 * heightFactor,
                             curve: Curves.easeIn,
                             child: Opacity(
                               opacity: dueCardTransparent ? 0 : 1,
@@ -417,9 +457,7 @@ class _BigCardState extends State<BigCard> {
                                                   ),
                                                 ),
                                                 GestureDetector(
-                                                  onTap: () {
-                                                    solidController.show();
-                                                  },
+                                                  onTap: () {},
                                                   child: Container(
                                                     decoration: BoxDecoration(
                                                         color: Color(0xff008afc),
@@ -453,10 +491,13 @@ class _BigCardState extends State<BigCard> {
                               BuildContext toHeroContext,
                             ) {
                               final Hero toHero = toHeroContext.widget;
-                              return RotationTransition(
-                                turns: Tween<double>(begin: -0.25, end: 0).animate(
-                                    CurvedAnimation(curve: Curves.ease, parent: animation)),
-                                child: toHero.child,
+                              return Material(
+                                type: MaterialType.transparency,
+                                child: RotationTransition(
+                                  turns: Tween<double>(begin: 0.25, end: 0).animate(
+                                      CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                  child: toHero.child,
+                                ),
                               );
                             },
                             tag: 'card_${widget.cardIndex}',
@@ -464,9 +505,8 @@ class _BigCardState extends State<BigCard> {
                               child: Stack(
                                 alignment: Alignment.topCenter,
                                 children: <Widget>[
-                                  RotatedBox(
-                                    //  Transform.rotate(
-                                      // angle: pi / 2,
+                                  SizedBox(
+                                    child: RotatedBox(
                                       quarterTurns: 1,
                                       child: Image.asset(
                                         'assets/card_sharing/new_${widget.cardImage}.png',
@@ -474,7 +514,7 @@ class _BigCardState extends State<BigCard> {
                                         height: 320 * widthFactor,
                                       ),
                                     ),
-                                  
+                                  ),
                                   AnimatedOpacity(
                                     duration: Duration(milliseconds: 450),
                                     curve: Curves.easeIn,
@@ -483,7 +523,7 @@ class _BigCardState extends State<BigCard> {
                                       padding: EdgeInsets.only(
                                           left: 40 * widthFactor,
                                           right: 45 * widthFactor,
-                                          top: 17 * heightFactor),
+                                          top: 25 * heightFactor),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
@@ -491,7 +531,7 @@ class _BigCardState extends State<BigCard> {
                                             '${widget.orgName}',
                                             style: cardSharingConstants.kBankNameStyle,
                                           ),
-                                          SizedBox(height: 47 * heightFactor),
+                                          SizedBox(height: 39 * heightFactor),
                                           Row(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -526,16 +566,20 @@ class _BigCardState extends State<BigCard> {
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 48 * heightFactor),
+                                          SizedBox(height: 54 * heightFactor),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
                                               Row(
                                                   crossAxisAlignment: CrossAxisAlignment.center,
                                                   children: <Widget>[
-                                                    Text('**** **** **** ',
-                                                        style:
-                                                            cardSharingConstants.kCardNumberStyle),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.only(top: 8 * heightFactor),
+                                                      child: Text('**** **** **** ',
+                                                          style: cardSharingConstants
+                                                              .kCardNumberStyle),
+                                                    ),
                                                     Text(
                                                         '${widget.accountNumber.substring(12, 16)}',
                                                         style:

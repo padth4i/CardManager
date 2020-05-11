@@ -80,7 +80,7 @@ class _CardSharingState extends State<CardSharing> {
             body: Stack(
               children: <Widget>[
                 Positioned(
-                  top: 36 * heightFactor,
+                  top: 32 * heightFactor,
                   child: Row(
                     children: <Widget>[
                       SizedBox(width: 16 * widthFactor),
@@ -91,7 +91,7 @@ class _CardSharingState extends State<CardSharing> {
                   ),
                 ),
                 Positioned(
-                  top: 80 * heightFactor,
+                  top: 71 * heightFactor,
                   left: 0,
                   right: 0,
                   bottom: 0,
@@ -106,7 +106,7 @@ class _CardSharingState extends State<CardSharing> {
                             Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    transitionDuration: Duration(milliseconds: 600),
+                                    transitionDuration: Duration(milliseconds: 5000),
                                     pageBuilder: (_, __, ___) => BigCard(
                                           accountNumber: mockAccounts.list[index].account_number,
                                           balance: mockAccounts.list[index].balance,
@@ -126,10 +126,13 @@ class _CardSharingState extends State<CardSharing> {
                               BuildContext toHeroContext,
                             ) {
                               final Hero toHero = toHeroContext.widget;
-                              return RotationTransition(
-                                turns: Tween<double>(begin: 0, end: 0.25).animate(
-                                    CurvedAnimation(curve: Curves.ease, parent: animation)),
-                                child: toHero.child,
+                              return Material(
+                                type: MaterialType.transparency,
+                                child: RotationTransition(
+                                  turns: Tween<double>(begin: 0, end: 0.25).animate(
+                                      CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                  child: toHero.child,
+                                ),
                               );
                             },
                             tag: 'card_$index',
@@ -169,7 +172,7 @@ class _CardSharingState extends State<CardSharing> {
                   ),
                 ),
                 Positioned(
-                  top: 380 * heightFactor,
+                  top: 365 * heightFactor,
                   child: Row(
                     children: <Widget>[
                       SizedBox(width: 16 * widthFactor),
@@ -180,7 +183,7 @@ class _CardSharingState extends State<CardSharing> {
                   ),
                 ),
                 Positioned(
-                  top: 420 * heightFactor,
+                  top: 404 * heightFactor,
                   left: 0,
                   right: 0,
                   bottom: 0,

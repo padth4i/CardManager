@@ -11,10 +11,22 @@ import 'package:card_manager/data/mock_data/mock_statements.dart';
 
 void main() => runApp(MyApp());
 
+class RemoveScrollGlowBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) =>
+      child;
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) {
+        return ScrollConfiguration(
+          behavior: RemoveScrollGlowBehavior(),
+          child: child,
+        );
+      },
       home: CardSharing(),
       debugShowCheckedModeBanner: false,
     );
@@ -106,7 +118,7 @@ class _CardSharingState extends State<CardSharing> {
                             Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    transitionDuration: Duration(milliseconds: 5000),
+                                    transitionDuration: Duration(milliseconds: 800),
                                     pageBuilder: (_, __, ___) => BigCard(
                                           accountNumber: mockAccounts.list[index].account_number,
                                           balance: mockAccounts.list[index].balance,

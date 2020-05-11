@@ -27,17 +27,17 @@ class CreditCard extends StatefulWidget {
 
 class _CreditCardState extends State<CreditCard> {
   bool isVisible = false;
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: 100), () {
-      if (mounted)
-        setState(() {
-          isVisible = true;
-        });
-      if (!mounted) return;
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Future.delayed(Duration(milliseconds: 100), () {
+  //     if (mounted)
+  //       setState(() {
+  //         isVisible = true;
+  //       });
+  //     if (!mounted) return;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

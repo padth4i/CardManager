@@ -66,20 +66,16 @@ class _BigCardState extends State<BigCard> {
   void initState() {
     super.initState();
     setState(() {
-      Future.delayed(Duration(milliseconds: 700), () {
+      slideUp = false;
+      Future.delayed(Duration(milliseconds: 800), () {
         enlargedTextTransparent = false;
         dueCardTransparent = false;
         solidController.show();
-        Future.delayed(Duration(milliseconds: 200), () {
+        Future.delayed(Duration(milliseconds: 50), () {
           setState(() {
             sheetMinHeight = 250;
             solidController.hide();
             sheetMaxHeight = 740;
-            Future.delayed(Duration(milliseconds: 300), () {
-              setState(() {
-                slideUp = false;
-              });
-            });
           });
         });
       });
@@ -88,19 +84,6 @@ class _BigCardState extends State<BigCard> {
 
   Future<bool> _onReturn() {
     Future.delayed((Duration(milliseconds: 200)), () {
-      // if (slideUp) {
-      //   setState(() {
-      //     dueCardTransparent = true;
-      //     if (solidController.isOpened)
-      //       sheetMaxHeight = 740;
-      //     else
-      //       sheetMaxHeight = 240;
-      //     solidController.show();
-      //     sheetMinHeight = 0;
-      //     solidController.hide();
-      //   });
-      //   Navigator.pop(context);
-      // } else {
       setState(() {
         slideUp = true;
         if (solidController.isOpened)
@@ -119,10 +102,8 @@ class _BigCardState extends State<BigCard> {
             isVisible = true;
             Navigator.pop(context);
           });
-          // Navigator.pop(context);
         });
       });
-      // }
     });
     return Future.delayed(Duration(milliseconds: 0));
   }
@@ -373,10 +354,11 @@ class _BigCardState extends State<BigCard> {
                         alignment: Alignment.topLeft,
                         children: <Widget>[
                           AnimatedPositioned(
-                            duration: Duration(milliseconds: 500),
+                            duration: Duration(milliseconds: 400),
                             top: slideUp ? 20 * heightFactor : 254 * heightFactor,
                             curve: Curves.easeIn,
-                            child: Opacity(
+                            child: AnimatedOpacity(
+                              duration: Duration(milliseconds: 300),
                               opacity: dueCardTransparent ? 0 : 1,
                               child: Container(
                                 padding: EdgeInsets.only(left: 20 * widthFactor),
@@ -492,13 +474,23 @@ class _BigCardState extends State<BigCard> {
                             ) {
                               final Hero toHero = toHeroContext.widget;
                               return Material(
-                                type: MaterialType.transparency,
-                                child: RotationTransition(
-                                  turns: Tween<double>(begin: 0.25, end: 0).animate(
-                                      CurvedAnimation(curve: Curves.ease, parent: animation)),
-                                  child: toHero.child,
-                                ),
-                              );
+                                  type: MaterialType.transparency,
+                                  // child: RotationTransition(
+                                  // turns: Tween<double>(begin: -0.25, end: 0).animate(
+                                  //     CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                  //   child: toHero.child,
+                                  // ),
+                                  child: ScaleTransition(
+                                    scale: Tween<double>(begin: 0.756, end: 1).animate(
+                                        CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                    child: RotationTransition(
+                                        turns: Tween<double>(begin: 0, end: 0.25).animate(
+                                            CurvedAnimation(curve: Curves.ease, parent: animation)),
+                                        child: RotatedBox(
+                                          child: toHero.child,
+                                          quarterTurns: 3,
+                                        )),
+                                  ));
                             },
                             tag: 'card_${widget.cardIndex}',
                             child: SizedBox(

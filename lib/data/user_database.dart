@@ -80,7 +80,9 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin{
   final AppDatabase db;
   UserDao(this.db):super(db);
 
-  
+  Future<void> insertMultipleExpense(List<Expense> listExpenses) async{
+    await into(expenses).insertAll(listExpenses);
+  }
 
 }
 

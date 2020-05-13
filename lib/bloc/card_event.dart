@@ -4,19 +4,18 @@ abstract class CardEvent extends Equatable {
   const CardEvent();
 }
 
-class CardTapEvent extends CardEvent {
-  final String cardColor, orgName, accountNumber, cardType;
-  final double balance, spentThisMonth;
-  final int cardIndex;
+class ChangeScrollPhysicsToShow extends CardEvent {
+  final ScrollPhysics physics;
 
-  CardTapEvent(this.cardColor, this.orgName, this.accountNumber, this.cardType, this.balance,
-      this.spentThisMonth, this.cardIndex);
+  ChangeScrollPhysicsToShow(this.physics);
   @override
-  List<Object> get props =>
-      [cardColor, orgName, accountNumber, cardType, balance, spentThisMonth, cardIndex];
+  List<Object> get props => [physics];
 }
 
-class CardReturnEvent extends CardEvent {
+class ChangeScrollPhysicsToHidden extends CardEvent {
+  final ScrollPhysics physics;
+
+  ChangeScrollPhysicsToHidden(this.physics);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [physics];
 }

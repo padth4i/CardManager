@@ -1035,7 +1035,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   final bool successful;
   final double amount_in_sms;
   final double expense_amount;
-  final double account_number;
+  final String account_number;
   final double account_balance;
   final bool is_debit;
   final bool is_credit;
@@ -1112,7 +1112,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           .mapFromDatabaseResponse(data['${effectivePrefix}amount_in_sms']),
       expense_amount: doubleType
           .mapFromDatabaseResponse(data['${effectivePrefix}expense_amount']),
-      account_number: doubleType
+      account_number: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}account_number']),
       account_balance: doubleType
           .mapFromDatabaseResponse(data['${effectivePrefix}account_balance']),
@@ -1169,7 +1169,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       successful: serializer.fromJson<bool>(json['successful']),
       amount_in_sms: serializer.fromJson<double>(json['amount_in_sms']),
       expense_amount: serializer.fromJson<double>(json['expense_amount']),
-      account_number: serializer.fromJson<double>(json['account_number']),
+      account_number: serializer.fromJson<String>(json['account_number']),
       account_balance: serializer.fromJson<double>(json['account_balance']),
       is_debit: serializer.fromJson<bool>(json['is_debit']),
       is_credit: serializer.fromJson<bool>(json['is_credit']),
@@ -1205,7 +1205,7 @@ class Expense extends DataClass implements Insertable<Expense> {
       'successful': serializer.toJson<bool>(successful),
       'amount_in_sms': serializer.toJson<double>(amount_in_sms),
       'expense_amount': serializer.toJson<double>(expense_amount),
-      'account_number': serializer.toJson<double>(account_number),
+      'account_number': serializer.toJson<String>(account_number),
       'account_balance': serializer.toJson<double>(account_balance),
       'is_debit': serializer.toJson<bool>(is_debit),
       'is_credit': serializer.toJson<bool>(is_credit),
@@ -1331,7 +1331,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           bool successful,
           double amount_in_sms,
           double expense_amount,
-          double account_number,
+          String account_number,
           double account_balance,
           bool is_debit,
           bool is_credit,
@@ -1510,7 +1510,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<bool> successful;
   final Value<double> amount_in_sms;
   final Value<double> expense_amount;
-  final Value<double> account_number;
+  final Value<String> account_number;
   final Value<double> account_balance;
   final Value<bool> is_debit;
   final Value<bool> is_credit;
@@ -1612,7 +1612,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       Value<bool> successful,
       Value<double> amount_in_sms,
       Value<double> expense_amount,
-      Value<double> account_number,
+      Value<String> account_number,
       Value<double> account_balance,
       Value<bool> is_debit,
       Value<bool> is_credit,
@@ -1788,12 +1788,12 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
 
   final VerificationMeta _account_numberMeta =
       const VerificationMeta('account_number');
-  GeneratedRealColumn _account_number;
+  GeneratedTextColumn _account_number;
   @override
-  GeneratedRealColumn get account_number =>
+  GeneratedTextColumn get account_number =>
       _account_number ??= _constructAccountNumber();
-  GeneratedRealColumn _constructAccountNumber() {
-    return GeneratedRealColumn(
+  GeneratedTextColumn _constructAccountNumber() {
+    return GeneratedTextColumn(
       'account_number',
       $tableName,
       true,
@@ -2297,7 +2297,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     }
     if (d.account_number.present) {
       map['account_number'] =
-          Variable<double, RealType>(d.account_number.value);
+          Variable<String, StringType>(d.account_number.value);
     }
     if (d.account_balance.present) {
       map['account_balance'] =

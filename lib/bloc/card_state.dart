@@ -9,17 +9,18 @@ class CardInitial extends CardState {
   List<Object> get props => [];
 }
 
-class CardsList extends CardState {
+class ChangedScrollPhysicsToShown extends CardState {
+  final ScrollPhysics physics;
+
+  ChangedScrollPhysicsToShown(this.physics);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [physics];
 }
 
-class CardExpanded extends CardState {
-  final String cardColor, orgName, accountNumber, cardType;
-  final double balance, spentThisMonth;
-  final int cardIndex;
+class ChangedScrollPhysicsToHidden extends CardState {
+  final ScrollPhysics physics;
 
-  CardExpanded(this.cardColor, this.orgName, this.accountNumber, this.cardType, this.balance, this.spentThisMonth, this.cardIndex);
+  ChangedScrollPhysicsToHidden(this.physics);
   @override
-  List<Object> get props => [cardColor, orgName, accountNumber, cardType, balance, spentThisMonth, cardIndex];
+  List<Object> get props => [physics];
 }

@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:card_manager/bloc/card_bloc.dart';
+import 'package:card_manager/bottom_sheet.dart' as bottomSheet;
 import 'package:card_manager/constants/mvp_constants.dart';
 import 'package:card_manager/data/spends_object.dart';
-import 'package:card_manager/solidBottomSheet.dart' as bottomSheet;
 import 'package:card_manager/spends_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:card_manager/constants/card_sharing_constants.dart';
@@ -18,6 +20,7 @@ class BigCard extends StatefulWidget {
   final String orgName, accountNumber, accountType, cardImage;
   final double balance, spentThisMonth;
   final int cardIndex;
+  final List<SpendsObject> spends;
 
   const BigCard(
       {Key key,
@@ -27,7 +30,8 @@ class BigCard extends StatefulWidget {
       this.balance,
       this.spentThisMonth,
       this.cardImage,
-      this.cardIndex})
+      this.cardIndex,
+      this.spends})
       : super(key: key);
   @override
   _BigCardState createState() => _BigCardState();
@@ -59,12 +63,14 @@ class _BigCardState extends State<BigCard> {
   bool slideUp = true;
   bool dueCardTransparent = true;
   bool enlargedTextTransparent = true;
-  double sheetMaxHeight = 250, sheetMinHeight = 0;
+  double sheetMaxHeight, sheetMinHeight = 0;
   SolidController solidController = SolidController();
+  ScrollPhysics physics = NeverScrollableScrollPhysics();
 
   @override
   void initState() {
     super.initState();
+    sheetMaxHeight = widget.accountType == 'debit' ? 450 : 250;
     setState(() {
       slideUp = false;
       Future.delayed(Duration(milliseconds: 800), () {
@@ -73,7 +79,7 @@ class _BigCardState extends State<BigCard> {
         solidController.show();
         Future.delayed(Duration(milliseconds: 50), () {
           setState(() {
-            sheetMinHeight = 250;
+            sheetMinHeight = widget.accountType == 'debit' ? 450 : 250;
             solidController.hide();
             sheetMaxHeight = 740;
           });
@@ -87,18 +93,18 @@ class _BigCardState extends State<BigCard> {
       setState(() {
         slideUp = true;
         if (solidController.isOpened)
-          sheetMaxHeight = 740;
+          sheetMaxHeight = widget.accountType == 'debit' ? 450 : 250;
         else
           sheetMaxHeight = 250;
         solidController.show();
         sheetMinHeight = 0;
         solidController.hide();
-        Future.delayed(Duration(milliseconds: 510), () {
+        Future.delayed(Duration(milliseconds: 300), () {
           setState(() {
             dueCardTransparent = true;
           });
         }).then((onValue) {
-          Future.delayed(Duration(milliseconds: 100), () {
+          Future.delayed(Duration(milliseconds: 50), () {
             isVisible = true;
             Navigator.pop(context);
           });
@@ -113,6 +119,15 @@ class _BigCardState extends State<BigCard> {
     MediaQueryData queryData = MediaQuery.of(context);
     cardSharingConstants = CardSharingConstants(queryData.textScaleFactor);
     mvpConstants = MvpConstants(queryData.textScaleFactor);
+
+    // List<SpendsObject> newSpends = List();
+    // for (int i=0; i<3; i++) {
+    //   for (int j=0; j< widget.spends[i].amount.length; j++) {
+    //     if (widget.spends[i].accountNumber[j] == widget.accountNumber)
+    //       newSpends.add(widget.spends[i]);
+    //   }
+    // }
+    print('bruh ${widget.spends[0].amount[0]}');
     return WillPopScope(
       onWillPop: _onReturn,
       child: SafeArea(
@@ -124,189 +139,300 @@ class _BigCardState extends State<BigCard> {
             print(widthFactor);
             return Scaffold(
               backgroundColor: Color(0xff171717),
-              bottomSheet: Container(
-                color: Color(0xff171717),
-                child: bottomSheet.SolidBottomSheet(
-                  // minHeight:  ? 0 : 240 * heightFactor,
-                  // minHeight: 0,
-                  // maxHeight:  ? 240 * heightFactor : 740 * heightFactor,
-                  // maxHeight: 740 * heightFactor,
-                  minHeight: sheetMinHeight * heightFactor,
-                  maxHeight: sheetMaxHeight * heightFactor,
-                  smoothness: Smoothness.high,
-                  draggableBody: true,
-                  controller: solidController,
-                  canUserSwipe: true,
-                  headerBar: Container(
-                    color: Colors.transparent,
-                  ),
-                  onHide: () {
-                    print('hide');
-                  },
-                  onShow: () {
-                    print('show');
-                  },
-                  body: Container(
-                    color: Color(0xFF1f2023),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          color: Color(0xFF171717),
-                          child: Container(
-                            height: 72 * heightFactor,
-                            decoration: BoxDecoration(
-                                color: Color(0xFF1f2023),
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(14), topRight: Radius.circular(14))),
-                            child: Center(
-                                child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                  Container(
-                                    height: 2 * heightFactor,
-                                    width: 16 * widthFactor,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.2),
-                                        borderRadius: BorderRadius.all(Radius.circular(12))),
-                                  ),
-                                  Container(
-                                    child: Center(
-                                      child: Text(
-                                        "Recent transactions",
-                                        style: mvpConstants.kBottomSheetHeaderText,
-                                      ),
-                                    ),
-                                  )
-                                ])),
-                          ),
-                        ),
-                        SingleChildScrollView(
-                          child: Container(
-                            height: 298 * heightFactor,
-                            width: 342 * widthFactor,
-                            decoration: BoxDecoration(
-                                color: Color(0xFF1f2023),
-                                border: Border.all(width: 2, color: Color(0x0cffffff)),
-                                borderRadius: BorderRadius.all(Radius.circular(8))),
-                            child: Column(children: <Widget>[
-                              Container(
-                                color: Color(0xFF1f2023),
-                                child: Column(children: <Widget>[
-                                  SizedBox(
-                                    height: 40 * heightFactor,
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.only(
-                                        left: 24 * widthFactor, right: 24 * widthFactor),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text('Spends done in June',
-                                            style: cardSharingConstants.kBottomSheetDate),
-                                        Text('₹3456',
-                                            style: cardSharingConstants.kBottomSheetValue),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20 * heightFactor,
-                                  ),
-                                ]),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  color: Color(0xFF1f2023),
-                                  child: ListView.builder(
-                                    itemCount: 3,
-                                    primary: false,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return Column(
-                                        children: <Widget>[
-                                          Container(
-                                            height: 61 * heightFactor,
-                                            width: 328 * widthFactor,
-                                            decoration: BoxDecoration(
-                                              color: Color(0xFF27292d),
-                                              borderRadius: BorderRadius.all(Radius.circular(6)),
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.only(top: 10 * heightFactor),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: <Widget>[
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Padding(
-                                                        padding: EdgeInsets.only(
-                                                          left: 8 * widthFactor,
-                                                          bottom: 10 * heightFactor,
-                                                        ),
-                                                        child: Container(
-                                                          height: 40 * heightFactor,
-                                                          width: 40 * widthFactor,
-                                                          child: SvgPicture.asset(
-                                                            'assets/expense_category_icons/Food.svg',
-                                                            semanticsLabel: 'idea',
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        padding: EdgeInsets.only(
-                                                          left: 11 * widthFactor,
-                                                          bottom: 6 * heightFactor,
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
-                                                          children: <Widget>[
-                                                            Text(
-                                                              'Leon Grill',
-                                                              style: mvpConstants.spendCardName,
-                                                            ),
-                                                            Padding(
-                                                              padding: EdgeInsets.only(
-                                                                  top: 8 * heightFactor),
-                                                              child: Text(
-                                                                "Today, 11:43AM",
-                                                                style: mvpConstants.spendCardDate,
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Container(
-                                                    padding: EdgeInsets.only(
-                                                        bottom: 33 * heightFactor,
-                                                        right: 8 * widthFactor),
-                                                    child: Text(
-                                                      "₹30",
-                                                      style: mvpConstants
-                                                          .spendCardAmountNegativeAmount,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          Container(height: 12 * heightFactor)
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ]),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+              bottomSheet: BlocBuilder<CardBloc, CardState>(
+                builder: (context, state) {
+                  if (state is ChangedScrollPhysicsToShown)
+                    return bottomSheet.BottomSheet(
+                      heightFactor: heightFactor,
+                      widthFactor: widthFactor,
+                      physics: ScrollPhysics(),
+                      sheetMaxHeight: sheetMaxHeight,
+                      sheetMinHeight: sheetMinHeight,
+                      solidController: solidController,
+                      spends: widget.spends,
+                    );
+                  if (state is ChangedScrollPhysicsToHidden)
+                    return bottomSheet.BottomSheet(
+                      heightFactor: heightFactor,
+                      widthFactor: widthFactor,
+                      physics: NeverScrollableScrollPhysics(),
+                      sheetMaxHeight: sheetMaxHeight,
+                      sheetMinHeight: sheetMinHeight,
+                      solidController: solidController,
+                      spends: widget.spends,
+                    );
+                  //     return Container(
+                  //   color: Color(0xff171717),
+                  //   child: bottomSheet.SolidBottomSheet(
+                  //     // minHeight:  ? 0 : 240 * heightFactor,
+                  //     // minHeight: 0,
+                  //     // maxHeight:  ? 240 * heightFactor : 740 * heightFactor,
+                  //     // maxHeight: 740 * heightFactor,
+                  //     minHeight: sheetMinHeight * heightFactor,
+                  //     maxHeight: sheetMaxHeight * heightFactor,
+                  //     smoothness: Smoothness.high,
+                  //     draggableBody: true,
+                  //     controller: solidController,
+                  //     canUserSwipe: true,
+                  //     headerBar: Container(
+                  //       color: Colors.transparent,
+                  //     ),
+                  //     onHide: () {
+                  //       print('hide');
+                  //       ChangeScrollPhysicsToHidden event = ChangeScrollPhysicsToHidden(NeverScrollableScrollPhysics());
+                  //       blocInstance.add(event);
+                  //     },
+                  //     onShow: () {
+                  //       print('show');
+                  //       ChangeScrollPhysicsToShow event = ChangeScrollPhysicsToShow(ScrollPhysics());
+                  //       blocInstance.add(event);
+                  //     },
+                  //     body: Container(
+                  //       color: Color(0xFF1f2023),
+                  //       child: Column(
+                  //         children: <Widget>[
+                  //           Container(
+                  //             color: Color(0xFF171717),
+                  //             child: Container(
+                  //               height: 72 * heightFactor,
+                  //               decoration: BoxDecoration(
+                  //                   color: Color(0xFF1f2023),
+                  //                   borderRadius: BorderRadius.only(
+                  //                       topLeft: Radius.circular(14), topRight: Radius.circular(14))),
+                  //               child: Center(
+                  //                   child: Column(
+                  //                       crossAxisAlignment: CrossAxisAlignment.center,
+                  //                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //                       children: <Widget>[
+                  //                     Container(
+                  //                       height: 2 * heightFactor,
+                  //                       width: 16 * widthFactor,
+                  //                       decoration: BoxDecoration(
+                  //                           color: Colors.white.withOpacity(0.2),
+                  //                           borderRadius: BorderRadius.all(Radius.circular(12))),
+                  //                     ),
+                  //                     Container(
+                  //                       child: Center(
+                  //                         child: Text(
+                  //                           "Recent transactions",
+                  //                           style: mvpConstants.kBottomSheetHeaderText,
+                  //                         ),
+                  //                       ),
+                  //                     )
+                  //                   ])),
+                  //             ),
+                  //           ),
+                  //           Expanded(
+                  //             child: ListView(
+                  //               physics: state.physics,
+                  //               children: <Widget>[
+                  //                 Container(
+                  //                   height: (widget.spends[0].amount.length +
+                  //                           widget.spends[0].amount.length / 6 +
+                  //                           (widget.spends[0].amount.length / 12).floor() +
+                  //                           1.3) *
+                  //                       61 *
+                  //                       heightFactor,
+                  //                   width: 342 * widthFactor,
+                  //                   decoration: BoxDecoration(
+                  //                       color: Color(0xFF1f2023),
+                  //                       border: Border.all(width: 2, color: Color(0x0cffffff)),
+                  //                       borderRadius: BorderRadius.all(Radius.circular(8))),
+                  //                   child: Column(
+                  //                     children: <Widget>[
+                  //                       SizedBox(
+                  //                         height: 24 * heightFactor,
+                  //                       ),
+                  //                       Container(
+                  //                         padding: EdgeInsets.only(
+                  //                             left: 24 * widthFactor, right: 24 * widthFactor),
+                  //                         child: Row(
+                  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //                           children: <Widget>[
+                  //                             Text('Spends done in May',
+                  //                                 style: cardSharingConstants.kBottomSheetDate),
+                  //                             Text('₹${widget.spends[0].total_spends}',
+                  //                                 style: cardSharingConstants.kBottomSheetValue),
+                  //                           ],
+                  //                         ),
+                  //                       ),
+                  //                       SizedBox(
+                  //                         height: 20 * heightFactor,
+                  //                       ),
+                  //                       Expanded(
+                  //                         child: Container(
+                  //                           decoration: BoxDecoration(
+                  //                               color: Color(0xFF1f2023),
+                  //                               borderRadius: BorderRadius.only(
+                  //                                   bottomLeft: Radius.circular(8),
+                  //                                   bottomRight: Radius.circular(8))),
+                  //                           child: ListView.builder(
+                  //                             itemCount: widget.spends[0].amount.length,
+                  //                             primary: false,
+                  //                             physics: NeverScrollableScrollPhysics(),
+                  //                             itemBuilder: (context, innerIndex) {
+                  //                               return Padding(
+                  //                                 padding:
+                  //                                     EdgeInsets.only(bottom: 12, left: 14, right: 14),
+                  //                                 child: SpendsCard(
+                  //                                   expense_type:
+                  //                                       widget.spends[0].expense_type[innerIndex],
+                  //                                   height_factor: heightFactor,
+                  //                                   icon_name: widget.spends[0].category[innerIndex],
+                  //                                   spendName: widget.spends[0].tags[innerIndex],
+                  //                                   value: widget.spends[0].amount[0].toString(),
+                  //                                   width_factor: widthFactor,
+                  //                                 ),
+                  //                               );
+                  //                             },
+                  //                           ),
+                  //                         ),
+                  //                       )
+                  //                     ],
+                  //                   ),
+                  //                 ),
+                  //                 SizedBox(height: 10 * heightFactor),
+                  //                 Container(
+                  //                   height: (widget.spends[1].amount.length +
+                  //                           widget.spends[1].amount.length / 6 +
+                  //                           (widget.spends[1].amount.length / 12).floor() +
+                  //                           1.3) *
+                  //                       61 *
+                  //                       heightFactor,
+                  //                   width: 342 * widthFactor,
+                  //                   decoration: BoxDecoration(
+                  //                       color: Color(0xFF1f2023),
+                  //                       border: Border.all(width: 2, color: Color(0x0cffffff)),
+                  //                       borderRadius: BorderRadius.all(Radius.circular(8))),
+                  //                   child: Column(
+                  //                     children: <Widget>[
+                  //                       SizedBox(
+                  //                         height: 24 * heightFactor,
+                  //                       ),
+                  //                       Container(
+                  //                         padding: EdgeInsets.only(
+                  //                             left: 24 * widthFactor, right: 24 * widthFactor),
+                  //                         child: Row(
+                  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //                           children: <Widget>[
+                  //                             Text('Spends done in April',
+                  //                                 style: cardSharingConstants.kBottomSheetDate),
+                  //                             Text('₹${widget.spends[1].total_spends}',
+                  //                                 style: cardSharingConstants.kBottomSheetValue),
+                  //                           ],
+                  //                         ),
+                  //                       ),
+                  //                       SizedBox(
+                  //                         height: 20 * heightFactor,
+                  //                       ),
+                  //                       Expanded(
+                  //                         child: Container(
+                  //                           decoration: BoxDecoration(
+                  //                               color: Color(0xFF1f2023),
+                  //                               borderRadius: BorderRadius.only(
+                  //                                   bottomLeft: Radius.circular(8),
+                  //                                   bottomRight: Radius.circular(8))),
+                  //                           child: ListView.builder(
+                  //                             itemCount: widget.spends[1].amount.length,
+                  //                             primary: false,
+                  //                             physics: NeverScrollableScrollPhysics(),
+                  //                             itemBuilder: (context, innerIndex) {
+                  //                               return Padding(
+                  //                                 padding:
+                  //                                     EdgeInsets.only(bottom: 12, left: 14, right: 14),
+                  //                                 child: SpendsCard(
+                  //                                   expense_type:
+                  //                                       widget.spends[1].expense_type[innerIndex],
+                  //                                   height_factor: heightFactor,
+                  //                                   icon_name: widget.spends[1].category[innerIndex],
+                  //                                   spendName: widget.spends[1].tags[innerIndex],
+                  //                                   value: widget.spends[1].amount[1].toString(),
+                  //                                   width_factor: widthFactor,
+                  //                                 ),
+                  //                               );
+                  //                             },
+                  //                           ),
+                  //                         ),
+                  //                       )
+                  //                     ],
+                  //                   ),
+                  //                 ),
+                  //                 SizedBox(height: 10 * heightFactor),
+                  //                 Container(
+                  //                   height: (widget.spends[2].amount.length +
+                  //                           widget.spends[2].amount.length / 6 +
+                  //                           (widget.spends[2].amount.length / 12).floor() +
+                  //                           1.3) *
+                  //                       61 *
+                  //                       heightFactor,
+                  //                   width: 342 * widthFactor,
+                  //                   decoration: BoxDecoration(
+                  //                       color: Color(0xFF1f2023),
+                  //                       border: Border.all(width: 2, color: Color(0x0cffffff)),
+                  //                       borderRadius: BorderRadius.all(Radius.circular(8))),
+                  //                   child: Column(
+                  //                     children: <Widget>[
+                  //                       SizedBox(
+                  //                         height: 24 * heightFactor,
+                  //                       ),
+                  //                       Container(
+                  //                         padding: EdgeInsets.only(
+                  //                             left: 24 * widthFactor, right: 24 * widthFactor),
+                  //                         child: Row(
+                  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //                           children: <Widget>[
+                  //                             Text('Spends done in March',
+                  //                                 style: cardSharingConstants.kBottomSheetDate),
+                  //                             Text('₹${widget.spends[2].total_spends}',
+                  //                                 style: cardSharingConstants.kBottomSheetValue),
+                  //                           ],
+                  //                         ),
+                  //                       ),
+                  //                       SizedBox(
+                  //                         height: 20 * heightFactor,
+                  //                       ),
+                  //                       Expanded(
+                  //                         child: Container(
+                  //                           decoration: BoxDecoration(
+                  //                               color: Color(0xFF1f2023),
+                  //                               borderRadius: BorderRadius.only(
+                  //                                   bottomLeft: Radius.circular(8),
+                  //                                   bottomRight: Radius.circular(8))),
+                  //                           child: ListView.builder(
+                  //                             itemCount: widget.spends[2].amount.length,
+                  //                             primary: false,
+                  //                             physics: NeverScrollableScrollPhysics(),
+                  //                             itemBuilder: (context, innerIndex) {
+                  //                               return Padding(
+                  //                                 padding:
+                  //                                     EdgeInsets.only(bottom: 12, left: 14, right: 14),
+                  //                                 child: SpendsCard(
+                  //                                   expense_type:
+                  //                                       widget.spends[2].expense_type[innerIndex],
+                  //                                   height_factor: heightFactor,
+                  //                                   icon_name: widget.spends[2].category[innerIndex],
+                  //                                   spendName: widget.spends[2].tags[innerIndex],
+                  //                                   value: widget.spends[2].amount[2].toString(),
+                  //                                   width_factor: widthFactor,
+                  //                                 ),
+                  //                               );
+                  //                             },
+                  //                           ),
+                  //                         ),
+                  //                       )
+                  //                     ],
+                  //                   ),
+                  //                 ),
+                  //                 SizedBox(height: 10 * heightFactor),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+                  // );
+                },
               ),
               body: Container(
                 // padding: EdgeInsets.only(left: 20 * widthFactor),
@@ -353,113 +479,119 @@ class _BigCardState extends State<BigCard> {
                       child: Stack(
                         alignment: Alignment.topLeft,
                         children: <Widget>[
-                          AnimatedPositioned(
-                            duration: Duration(milliseconds: 400),
-                            top: slideUp ? 20 * heightFactor : 254 * heightFactor,
-                            curve: Curves.easeIn,
-                            child: AnimatedOpacity(
-                              duration: Duration(milliseconds: 300),
-                              opacity: dueCardTransparent ? 0 : 1,
-                              child: Container(
-                                padding: EdgeInsets.only(left: 20 * widthFactor),
-                                child: Stack(
-                                  children: <Widget>[
-                                    Image.asset(
-                                      'assets/card_sharing/due_card.png',
-                                      width: 320 * widthFactor,
-                                    ),
-                                    Container(
-                                        height: 152 * heightFactor,
+                          Visibility(
+                            visible: widget.accountType == 'debit' ? false : true,
+                            child: AnimatedPositioned(
+                              duration: Duration(milliseconds: 400),
+                              top: slideUp ? 20 * heightFactor : 254 * heightFactor,
+                              curve: Curves.easeIn,
+                              child: AnimatedOpacity(
+                                duration: Duration(milliseconds: 100),
+                                opacity: dueCardTransparent ? 0 : 1,
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 20 * widthFactor),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      Image.asset(
+                                        'assets/card_sharing/due_card.png',
                                         width: 320 * widthFactor,
-                                        padding: EdgeInsets.only(
-                                            left: 20 * widthFactor, right: 20 * widthFactor),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            SizedBox(height: 16 * heightFactor),
-                                            Text(
-                                              'YOU HAVE A DUE BILL  👀',
-                                              style: cardSharingConstants.kDueTitleStyle,
-                                            ),
-                                            SizedBox(height: 17 * heightFactor),
-                                            Row(
-                                              children: <Widget>[
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      'Total due',
-                                                      style: cardSharingConstants.kDueBodyStyle,
-                                                    ),
-                                                    SizedBox(height: 7 * heightFactor),
-                                                    Text(
-                                                      '₹69,542',
-                                                      style: cardSharingConstants.kTotalDueStyle,
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(width: 40 * widthFactor),
-                                                Container(
-                                                  width: 0.5 * widthFactor,
-                                                  height: 39 * heightFactor,
-                                                  color: Colors.white,
-                                                ),
-                                                SizedBox(width: 30 * widthFactor),
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      'Minimum due',
-                                                      style: cardSharingConstants.kDueBodyStyle,
-                                                    ),
-                                                    SizedBox(height: 7 * heightFactor),
-                                                    Text(
-                                                      '₹8952',
-                                                      style: cardSharingConstants.kMinimumDueStyle,
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(height: 20 * heightFactor),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: <Widget>[
-                                                RichText(
-                                                  text: TextSpan(
-                                                    children: <TextSpan>[
-                                                      TextSpan(
-                                                          text: 'Pay by ',
-                                                          style:
-                                                              cardSharingConstants.kDueBodyStyle),
-                                                      TextSpan(
-                                                          text: '14th April',
-                                                          style: cardSharingConstants.kDueDateStyle)
+                                      ),
+                                      Container(
+                                          height: 152 * heightFactor,
+                                          width: 320 * widthFactor,
+                                          padding: EdgeInsets.only(
+                                              left: 20 * widthFactor, right: 20 * widthFactor),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              SizedBox(height: 16 * heightFactor),
+                                              Text(
+                                                'YOU HAVE A DUE BILL  👀',
+                                                style: cardSharingConstants.kDueTitleStyle,
+                                              ),
+                                              SizedBox(height: 17 * heightFactor),
+                                              Row(
+                                                children: <Widget>[
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        'Total due',
+                                                        style: cardSharingConstants.kDueBodyStyle,
+                                                      ),
+                                                      SizedBox(height: 7 * heightFactor),
+                                                      Text(
+                                                        '₹69,542',
+                                                        style: cardSharingConstants.kTotalDueStyle,
+                                                      ),
                                                     ],
                                                   ),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () {},
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                        color: Color(0xff008afc),
-                                                        borderRadius:
-                                                            BorderRadius.all(Radius.circular(5))),
-                                                    height: 28 * heightFactor,
-                                                    width: 75 * widthFactor,
-                                                    child: Center(
-                                                      child: Text(
-                                                        'PAY',
-                                                        style: cardSharingConstants.kDueBillButton,
+                                                  SizedBox(width: 40 * widthFactor),
+                                                  Container(
+                                                    width: 0.5 * widthFactor,
+                                                    height: 39 * heightFactor,
+                                                    color: Colors.white,
+                                                  ),
+                                                  SizedBox(width: 30 * widthFactor),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        'Minimum due',
+                                                        style: cardSharingConstants.kDueBodyStyle,
                                                       ),
+                                                      SizedBox(height: 7 * heightFactor),
+                                                      Text(
+                                                        '₹8952',
+                                                        style:
+                                                            cardSharingConstants.kMinimumDueStyle,
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 20 * heightFactor),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: <Widget>[
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                            text: 'Pay by ',
+                                                            style:
+                                                                cardSharingConstants.kDueBodyStyle),
+                                                        TextSpan(
+                                                            text: '14th April',
+                                                            style:
+                                                                cardSharingConstants.kDueDateStyle)
+                                                      ],
                                                     ),
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        ))
-                                  ],
+                                                  GestureDetector(
+                                                    onTap: () {},
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          color: Color(0xff008afc),
+                                                          borderRadius:
+                                                              BorderRadius.all(Radius.circular(5))),
+                                                      height: 28 * heightFactor,
+                                                      width: 75 * widthFactor,
+                                                      child: Center(
+                                                        child: Text(
+                                                          'PAY',
+                                                          style:
+                                                              cardSharingConstants.kDueBillButton,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ))
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -480,16 +612,13 @@ class _BigCardState extends State<BigCard> {
                                   //     CurvedAnimation(curve: Curves.ease, parent: animation)),
                                   //   child: toHero.child,
                                   // ),
-                                  child: ScaleTransition(
-                                    scale: Tween<double>(begin: 0.756, end: 1).animate(
-                                        CurvedAnimation(curve: Curves.ease, parent: animation)),
-                                    child: RotationTransition(
-                                        turns: Tween<double>(begin: 0, end: 0.25).animate(
-                                            CurvedAnimation(curve: Curves.ease, parent: animation)),
-                                        child: RotatedBox(
-                                          child: toHero.child,
-                                          quarterTurns: 3,
-                                        )),
+                                  child: RotationTransition(
+                                    turns: Tween<double>(begin: 0, end: 0.25).animate(
+                                        CurvedAnimation(curve: Curves.easeIn, parent: animation)),
+                                    child: RotatedBox(
+                                      child: toHero.child,
+                                      quarterTurns: 3,
+                                    ),
                                   ));
                             },
                             tag: 'card_${widget.cardIndex}',

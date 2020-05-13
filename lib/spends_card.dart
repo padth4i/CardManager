@@ -7,7 +7,6 @@ class SpendsCard extends StatelessWidget {
   SpendsCard({
    this.value,
    this.spendName,
-    this.width,
     this.height_factor,
     this.width_factor,
     this.icon_name,
@@ -15,7 +14,7 @@ class SpendsCard extends StatelessWidget {
 });
 
   String spendName, value, icon_name, expense_type;
-  double width, width_factor, height_factor;
+  double width_factor, height_factor;
   MvpConstants mvpConstants;
 
   @override
